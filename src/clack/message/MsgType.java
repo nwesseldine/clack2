@@ -4,5 +4,7 @@ public enum MsgType
 {
     LISTUSERS,
     LOGOUT,
-    TEXT
+    TEXT,
+    LOGIN,
+    OPTION
 }
