@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/state-diagram
+hide empty description
+'scale 350 width
+
+[*] --> ConnectionWait
+ConnectionWait --> SendGreeting : accept
+SendGreeting --> LoginWait : TextMsg
+
+LoginWait --> CheckLogin : LoginMsg
+LoginWait --> SendGreeting : all other msgs
+CheckLogin --> SendLoginFail : invalid
+SendLoginFail --> SendGreeting : TextMsg
+CheckLogin --> SendLoginConfirm : valid
+SendLoginConfirm --> CmdWait : TextMsg
+CmdWait --> ConnectionWait : LogoutMsg
+
+CmdWait --> BuildUserListReply : ListUsersMsg
+CmdWait --> SetOption : OptionMsg w/ setting
+CmdWait --> BuildOptionReply : OptionMsg w/o setting
+SetOption --> BuildOptionReply
+CmdWait --> SaveFile : FileMsg
+SaveFile --> BuildSaveOKReply
+SaveFile --> BuildSaveFailReply
+CmdWait --> BuildEchoReply : TextMsg
+
+BuildUserListReply --> SendReply
+BuildOptionReply --> SendReply
+BuildSaveOKReply --> SendReply
+BuildSaveFailReply --> SendReply
+BuildEchoReply --> SendReply
+
+SendReply --> CmdWait : TextMsg
+
+@enduml

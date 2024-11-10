@@ -1,0 +1,95 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide empty members
+skinparam classAttributeIconSize 0
+
+package your_team_name.clack.cipher {
+'    CharacterCipher <|.. CharacterCipher
+    CharacterCipher <|-- CaesarCipher
+    CharacterCipher <|-- PseudoOneTimePad
+    CharacterCipher <|-- PlayfairCipher
+    CharacterCipher <|-- VignereCipher
+
+    'formatting
+    CaesarCipher -[hidden]- PseudoOneTimePad
+    VignereCipher -[hidden]- PlayfairCipher
+
+    enum CipherEnum {
+        CAESAR
+        PSEUDO_OTP
+        PLAYFAIR
+        VIGNERE
+    }
+
+    abstract class CharacterCipher {
+        + {static} ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        + {static} group(str:String,n:int) : String
+        + {static} shift(c:char,n:int) : char
+        + {static} shift(str:String,n:int) : String
+        + {abstract} prep(cleartext:String) : String
+        + {abstract} encrypt(preptext:String) : String
+        + {abstract} decrypt(ciphertext:String) : String
+    }
+    note right of CharacterCipher::group(str:String,n:int)
+      Reformat str to groups of n characters,
+      with groups separated by a space.
+    end note
+    note right of CharacterCipher::shift(c:char,n:int)
+      Return the char that is n letters further on
+      in the alphabet (with wrap-around). Throws
+      IllegalArgumentException if c not in ALPHABET
+    end note
+    note right of CharacterCipher::shift(str:String,n:int)
+      Return the string formed by shifting each of
+      str's characters by n.
+    end note
+
+    class CaesarCipher {
+        + CaesarCipher(key:int)
+        + CaesarCipher(key:String)
+    }
+    note left of CaesarCipher::CaesarCipher(key:int)
+    key gives how many places to
+    shift each letter when encrypting
+    (decrypting is same shift but in
+    the opposite direction)
+    end note
+    note left of CaesarCipher::CaesarCipher(key:String)
+    First letter of key is extracted, and its
+    position in ALPHABET is used as the shift
+    end note
+
+    class VignereCipher {
+        + VignereCipher(key:String)
+    }
+    note right of VignereCipher::VignereCipher(key:String)
+    All characters in key
+    must be from ALPHABET
+    end note
+
+    class PlayfairCipher {
+        + PlayfairCipher(key:String)
+    }
+    note right of PlayfairCipher::PlayfairCipher(key:String)
+    Used to build encrypt/decrypt
+    matrix; all characters in key
+    must be from ALPHABET
+    end note
+
+    class PseudoOneTimePad {
+        + PseudoOneTimePad(key:long)
+        + PseudoOneTimePad(key:String)
+    }
+    note left of PseudoOneTimePad::PseudoOneTimePad(key:long)
+    key seeds a pseudo-random
+    number generator
+    end note
+    note left of PseudoOneTimePad::PseudoOneTimePad(key:String)
+    seedPhrase is hashed to get
+    a long that seeds a PRNG
+    (any characters are allowed)
+    end note
+
+}
+
+@enduml

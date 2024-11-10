@@ -1,0 +1,115 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+package your_team_name.clack.message{
+    Message <|-- OptionMessage
+    Message <|-- FileMessage
+    Message <|-- ListUsersMessage
+    Message <|-- HelpMessage
+    Message <|-- LogoutMessage
+    Message <|-- LoginMessage
+    Message <|-- TextMessage
+'    hide Spacer1
+'    Message *-[hidden] Spacer1
+'    Spacer1 -[hidden] MsgTypeEnum
+'    OptionEnum -[hidden]-* OptionMessage
+
+    OptionMessage --[hidden] FileMessage
+    ListUsersMessage --[hidden] LogoutMessage
+    TextMessage --[hidden] LoginMessage
+
+
+    enum MsgTypeEnum {
+        FILE
+        HELP
+        LISTUSERS
+        LOGIN
+        LOGOUT
+        OPTION
+        TEXT
+    }
+
+    enum OptionEnum {
+        CIPHER_KEY
+        CIPHER_NAME
+        CIPHER_ENABLE
+    }
+
+    abstract class Message {
+        - msgType : MsgTypeEnum <<final>>
+        - timestamp : LocalDate <<final>>
+        - username : String <<final>>
+        + Message(username)
+        + getMsgType() : MsgTypeEnum
+        + getTimestamp() : LocalDate
+        + getUsername() : String
+        '+ {abstract} getData() : String[]
+'        + {abstract} clientAction(client)
+'        + {abstract} serverAction(server)
+        + {abstract} equals(Object) : boolean
+        + {abstract} hashCode() : int
+        + {abstract} toString() : String
+    }
+
+    class OptionMessage {
+        - option : OptionEnum <<final>>
+        - value : String <<final>>
+        + OptionMessage(username, option, value)
+        + getOption() : OptionEnum
+        + getValue() : String
+    }
+
+    class FileMessage {
+        '+ {static} CONTENTS : int <<final>>
+        '+ {static} READ_PATH : int <<final>>
+        '+ {static} SAVE_NAME : int <<final>>
+        - fileContents : String <<final>>
+        '- fileReadPath : String <<final>>
+        - fileName : String <<final>>
+        + FileMessage(username, fileReadPath)
+        + FileMessage(username, fileReadPath, fileSaveName)
+        '+ getData() : String[]
+        + getFileContents() : String
+        '+ getFileReadPath() : String
+        + getFileName() : String
+    }
+'    note bottom of FileMessage
+'      getData() returns 3-element String[]. Use
+'      CONTENTS, READ_PATH, and SAVE_NAME
+'      constants as indexes to get respective data.
+'    end note
+
+    class HelpMessage {
+    + HelpMessage(username)
+    }
+
+    class ListUsersMessage {
+        + ListUsersMessage(username)
+    }
+
+    class LoginMessage {
+        + LoginMessage(username, password)
+    }
+
+    class LogoutMessage {
+        + LogoutMessage(username)
+    }
+
+    class TextMessage {
+        - text : String <<final>>
+        + TextMessage(username, text)
+        + getText() : String
+    }
+'    note bottom of TextMessage
+'        getData() returns text, in sole element
+'        of one-element String[].
+'    end note
+
+'    note "getData() returns empty String array" as NoDataNote
+'    ListUsersMessage .. NoDataNote
+'    LogoutMessage .. NoDataNote
+
+}
+
+@enduml
