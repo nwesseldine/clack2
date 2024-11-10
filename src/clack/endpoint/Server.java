@@ -116,6 +116,10 @@ public class Server
                         case MsgType.TEXT ->
                                 new TextMessage(serverName,
                                 "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
+                        case MsgType.LOGIN ->
+                                new TextMessage(serverName, "LOGIN requested");
+                        case MsgType.OPTION ->
+                                new  TextMessage(serverName, "OPTION requested");
                     };
 
                     outObj.writeObject(outMsg);
