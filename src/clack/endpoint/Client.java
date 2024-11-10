@@ -2,9 +2,7 @@ package clack.endpoint;
 
 import clack.message.*;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -73,15 +71,30 @@ public class Client {
      */
     public void start() throws UnknownHostException, IOException, ClassNotFoundException
     {
+        // LANEY'S ADDITION
+        ClientGUI gui = new ClientGUI(5, 5);
+
         System.out.println("Attempting connection to " + hostname + ":" + port);
         Scanner keyboard = new Scanner(System.in);
 
         try (
-            // TODO Create a socket (named 'socket') using hostname and port.
+                // TODO Create a socket (named 'socket') using hostname and port.
 
-            // TODO Construct an ObjectInputStream and ObjectOutputStream on the socket.
-            // TODO Name them 'inObj' and 'outObj'.
+                // TODO Construct an ObjectInputStream and ObjectOutputStream on the socket.
+                // TODO Name them 'inObj' and 'outObj'
+
+                // DELARA ADDED: creates a new socket using hostname and port
+                Socket socket = new Socket(hostname, port);
+
+                // DELARA ADDED: constructs ObjectOutputStream (outObj) on the socket
+                OutputStream outStream = socket.getOutputStream();
+                ObjectOutputStream outObj = new ObjectOutputStream(outStream);
+
+                // DELARA ADDED: constructs ObjectInputStream (inObj) on socket
+                InputStream inStream = socket.getInputStream();
+                ObjectInputStream inObj = new ObjectInputStream(inStream);
         )
+
         {
             String userInput;
             Message inMsg;
@@ -94,10 +107,24 @@ public class Client {
                 // TODO use a switch statement or expression, based on MsgType,
                 // TODO to decide what to show the user.
 
-                // Get user input
+                // DELARA ADDED: printing out a case for each message type in a switch statement
+                System.out.println(switch (inMsg.getMsgType()) {
+
+                    case LOGOUT:
+                        outMsg = new LogoutMessage("client");
+
+                    case LISTUSERS:
+                        outMsg = new ListUsersMessage("client");
+
+                    default:
+                        outMsg = new TextMessage("client", userInput);
+
+                });
+
                 System.out.print(prompt);
                 userInput = keyboard.nextLine();
                 String[] tokens = userInput.trim().split("\\s+");
+                
                 // DEBUG
                 // System.out.println("tokens: " + Arrays.toString(tokens));
 
@@ -106,6 +133,20 @@ public class Client {
                 // TODO to decide what Message object to construct.
 
                 // TODO send it to the server.
+
+                // DELARA ADDED: constructs message based on user input
+                outMsg = switch (tokens[0].toUpperCase()) {
+                    
+                    case "LOGOUT" -> new LogoutMessage("client");
+                    case "LISTUSERS" -> new ListUsersMessage("client");
+                    default -> new TextMessage("client", userInput);
+                    
+                };
+
+                // DELARA ADDED: sends message to server
+                    outObj.writeObject(outMsg);
+                    outObj.flush();
+
             } while (outMsg.getMsgType() != MsgType.LOGOUT);
 
             // Get server's closing reply and show it to user.
