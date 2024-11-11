@@ -96,7 +96,7 @@ public class Client {
         )
 
         {
-            String userInput;
+            String userInput = "";
             Message inMsg;
             Message outMsg;
 
@@ -108,18 +108,22 @@ public class Client {
                 // TODO to decide what to show the user.
 
                 // DELARA ADDED: printing out a case for each message type in a switch statement
-                System.out.println(switch (inMsg.getMsgType()) {
+                // should there be a case for option?
+                switch (inMsg.getMsgType()) {
 
-                    case LOGOUT:
-                        outMsg = new LogoutMessage("client");
+                    case LOGOUT -> {
+                        outMsg = new LogoutMessage("client"); }
 
-                    case LISTUSERS:
-                        outMsg = new ListUsersMessage("client");
+                    case LISTUSERS -> {
+                        outMsg = new ListUsersMessage("client"); }
 
-                    default:
-                        outMsg = new TextMessage("client", userInput);
+                    case LOGIN -> {
+                        outMsg = new LoginMessage("client"); }
 
-                });
+                    default -> {
+                        outMsg = new TextMessage("client", userInput); }
+
+                };
 
                 System.out.print(prompt);
                 userInput = keyboard.nextLine();
@@ -156,6 +160,9 @@ public class Client {
                         case LISTUSERS -> "UNEXPECTED RESPONSE: " + inMsg;
                         case LOGOUT -> "UNEXPECTED RESPONSE: " + inMsg;
                         case TEXT -> ((TextMessage) inMsg).getText();
+                        // DELARA ADDED: not sure what the actual printed statement should be for login and option
+                        case LOGIN -> "LOGIN: " + inMsg;
+                        case OPTION -> "UNEXPECTED RESPONSE: " + inMsg;
                     });
         }   // Streams and sockets closed by try-with-resources
 
