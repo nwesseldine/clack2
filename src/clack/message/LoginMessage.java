@@ -2,9 +2,11 @@ package clack.message;
 
 public class LoginMessage extends Message
 {
-    public LoginMessage(String username)
+    private final String password;
+    public LoginMessage(String username, String pass)
     {
-        super(username, MsgType.LOGIN);
+        super(username, MsgTypeEnum.LOGIN);
+        this.password = pass;
     }
 
     @Override

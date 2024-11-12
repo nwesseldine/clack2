@@ -2,23 +2,27 @@ package clack.message;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
 
-public class Message implements Serializable
+/**
+ * A class representing a Clack message.
+ */
+public abstract class Message implements Serializable
 {
-    private final MsgType msgType;
+    private final MsgTypeEnum msgTypeEnum;
     private final Instant timestamp;
     private final String username;
 
-    public Message(String username, MsgType msgType)
+    public Message(String username, MsgTypeEnum msgTypeEnum)
     {
-        this.msgType = msgType;
+        this.msgTypeEnum = msgTypeEnum;
         this.timestamp = Instant.now();
         this.username = username;
     }
 
-    public MsgType getMsgType()
+    public MsgTypeEnum getMsgType()
     {
-        return msgType;
+        return msgTypeEnum;
     }
 
     public Instant getTimestamp()
@@ -31,11 +35,41 @@ public class Message implements Serializable
         return username;
     }
 
+    /**
+     * Tests whether this Message is equal to some other object.
+     * @param o the other object
+     * @return true iff o is equal to this object
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Message message = (Message) o;
+        return msgTypeEnum == message.msgTypeEnum
+                && Objects.equals(timestamp, message.timestamp)
+                && Objects.equals(username, message.username);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(msgTypeEnum, timestamp, username);
+    }
+
+    /**
+     * Returns a string representation of this Message
+     * @return a string representation of this Message
+     */
     @Override
     public String toString()
     {
         return "Message{" +
-                "msgType=" + msgType +
+                "msgTypeEnum=" + msgTypeEnum +
                 ", timestamp=" + timestamp +
                 ", username='" + username + '\'' +
                 '}';

@@ -5,7 +5,7 @@ public class ListUsersMessage
 {
     public ListUsersMessage(String username)
     {
-        super(username, MsgType.LISTUSERS);
+        super(username, MsgTypeEnum.LISTUSERS);
     }
 
     @Override

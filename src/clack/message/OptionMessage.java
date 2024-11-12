@@ -2,16 +2,21 @@ package clack.message;
 
 public class OptionMessage extends Message
 {
-    public OptionMessage(String username)
+    private final OptionEnum option;
+    private final String value;
+
+    public OptionMessage(String username, OptionEnum op, String val)
     {
-        super(username, MsgType.OPTION);
+        super(username, MsgTypeEnum.OPTION);
+        this.option = op;
+        this.value = val;
     }
 
-    @Override
-    public String toString()
-    {
-        return "OptionMessage{"
-                + super.toString()
-                + "} ";
-    }
+   public OptionEnum getOption() {
+   }
+
+   public String getValue() {
+
+   }
+
 }

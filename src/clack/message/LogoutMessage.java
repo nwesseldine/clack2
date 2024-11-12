@@ -5,7 +5,7 @@ public class LogoutMessage
 {
     public LogoutMessage(String username)
     {
-        super(username, MsgType.LOGOUT);
+        super(username, MsgTypeEnum.LOGOUT);
     }
 
     @Override
