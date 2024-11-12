@@ -9,13 +9,13 @@ import java.awt.*;
  * This class is not responsible for handling the exchanges between the
  * Client and Server, only for the exchanges between the interface and the user.
  * <p>
- * To begin a conversation, the GUI client will first prompt the user to connect.
- * //TODO: Fact check this
+ * To begin a conversation, the 'Connection' panel will be used. Then, the 'Conversation' panel.
+ * The text-entry box allows communication.
  * <p>
- * //TODO: How does it end?
+ * The 'Control' panel includes buttons “Log In”, “Log Out”, “List Users”, “Help”, “Send File”,
+ * and “Clear Conversation”.
  */
 
-//TODO: FIX SYNTAX ERRORS
 
 public class ClientGUI
 {
@@ -33,29 +33,59 @@ public class ClientGUI
         final JLabel portLabel = new JLabel("Port: ");
         final JTextField portField = new JTextField("4466", 5);
         final JPanel connectionInfoPanel = new JPanel();
+        final JPanel controlInfoPanel = new JPanel (); // new
         connectionInfoPanel.setLayout(new BoxLayout(connectionInfoPanel, BoxLayout.LINE_AXIS));
         connectionInfoPanel.add(hostLabel);
         connectionInfoPanel.add(hostField);
         connectionInfoPanel.add(portLabel);
-        connectionInfoPanel.add(portField);
+        connectionInfoPanel.add(portField); //TODO: Do this for controls?
 
         // Connect and Disconnect buttons, each centered in their own
         // small pane, and these panes side-by-side.
         final JButton connectButton = new JButton("Connect");
         final JButton disconnectButton = new JButton("Disconnect");
 
+        // Buttons for "Log In", "Log Out", "List Users", "Help", "Send File", and "Clear Conversation".
+        final JButton logInButton = new JButton("Log In");
+        final JButton logOutButton = new JButton("Log Out");
+        final JButton listUsersButton = new JButton("List Users");
+        final JButton helpButton = new JButton("Help");
+        final JButton sendFileButton = new JButton("Send File");
+        final JButton clearConversationButton = new JButton("Clear Conversation");
+
+        // Connection Buttons
         final JPanel connectionButtonsPanel = new JPanel();
         connectionButtonsPanel.setLayout(new FlowLayout());
         connectionButtonsPanel.add(connectButton);
         connectionButtonsPanel.add(Box.createRigidArea((new Dimension(20, 0))));
         connectionButtonsPanel.add(disconnectButton);
 
+        // Add new panel with buttons.
+        final JPanel controlButtonsPanel = new JPanel();
+        controlButtonsPanel.setLayout(new FlowLayout());
+        controlButtonsPanel.add(logInButton);
+        controlButtonsPanel.add(logOutButton);
+        controlButtonsPanel.add(listUsersButton);
+        controlButtonsPanel.add(helpButton);
+        controlButtonsPanel.add(sendFileButton);
+        controlButtonsPanel.add(clearConversationButton);
+        controlButtonsPanel.add(Box.createRigidArea((new Dimension(20, 0))));
+
+        // Connection Panel
         final JPanel connectionPanel = new JPanel();
         connectionPanel.setBorder(BORDER);
         connectionPanel.setLayout(
                 new BoxLayout(connectionPanel, BoxLayout.PAGE_AXIS));
         connectionPanel.add(connectionInfoPanel);
         connectionPanel.add(connectionButtonsPanel);
+
+        // Control Panel
+        final JPanel controlPanel = new JPanel();
+        controlPanel.setBorder(BORDER);
+        controlPanel.setLayout(
+                new BoxLayout(controlPanel, BoxLayout.PAGE_AXIS));
+        controlPanel.add(controlInfoPanel);
+        controlPanel.add(controlButtonsPanel);
 
         // Build logPane: conversation log
         final JTextArea log = new JTextArea();
@@ -81,7 +111,7 @@ public class ClientGUI
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Clack");
         frame.setLayout(new BorderLayout());
-        frame.add(connectionPanel, BorderLayout.NORTH);
+        frame.add(connectionPanel, BorderLayout.NORTH); //TODO: Add control panel?
         frame.add(logPane, BorderLayout.CENTER);
         frame.add(questionPanel, BorderLayout.SOUTH);
 
@@ -106,6 +136,9 @@ public class ClientGUI
         questionField.addActionListener((e) ->
                 log.append("User entered: '" + questionField.getText() + "'\n")
         );
+
+        // New action listeners
+        
 
         frame.pack();
         frame.setLocation(x, y);
