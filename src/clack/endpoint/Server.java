@@ -117,7 +117,6 @@ public class Server
                                 new TextMessage(serverName,
                                 "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
                         case MsgTypeEnum.LOGIN ->
-
                                 new TextMessage(serverName, "LOGIN requested");
                         case MsgTypeEnum.OPTION ->
                                 // Set or report the option.

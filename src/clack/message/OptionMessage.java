@@ -13,9 +13,11 @@ public class OptionMessage extends Message
     }
 
    public OptionEnum getOption() {
+        return this.option;
    }
 
    public String getValue() {
+        return this.value;
 
    }
 
