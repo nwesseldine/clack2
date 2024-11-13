@@ -40,7 +40,7 @@ public class ClientGUI
         connectionInfoPanel.add(portField);
 
         // Control panel: host, port, buttons
-        final JPanel controlInfoPanel = new JPanel (); // TODO: Check these
+        final JPanel controlInfoPanel = new JPanel (); // TODO: Check this works
         controlInfoPanel.setLayout(new BoxLayout(controlInfoPanel, BoxLayout.LINE_AXIS));
         controlInfoPanel.add(hostLabel);
         controlInfoPanel.add(hostField);
@@ -131,6 +131,13 @@ public class ClientGUI
                     hostField.setEnabled(false);
                     portField.setEnabled(false);
                     connectButton.setEnabled(false);
+                    logInButton.setEnabled(true);
+                    logOutButton.setEnabled(false);
+                    // TODO is login needed here?
+                    listUsersButton.setEnabled(true);
+                    clearConversationButton.setEnabled(true);
+                    helpButton.setEnabled(true);
+                    sendFileButton.setEnabled(true);
                 }
         );
         disconnectButton.addActionListener((e) ->
@@ -139,6 +146,13 @@ public class ClientGUI
                     hostField.setEnabled(true);
                     portField.setEnabled(true);
                     connectButton.setEnabled(true);
+                    logInButton.setEnabled(false);
+                    logOutButton.setEnabled(true);
+                    //TODO is logout needed here?
+                    listUsersButton.setEnabled(false);
+                    clearConversationButton.setEnabled(false);
+                    helpButton.setEnabled(false);
+                    sendFileButton.setEnabled(false);
                 }
         );
         messageField.addActionListener((e) ->
@@ -149,43 +163,56 @@ public class ClientGUI
         logInButton.addActionListener((e) ->
                 {
                     log.append("Login button clicked\n");
-                    hostField.setEnabled(true);
-                    portField.setEnabled(true); //TODO: Change
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                    logInButton.setEnabled(false);
+                    logOutButton.setEnabled(true);
+                    listUsersButton.setEnabled(true);
+                    clearConversationButton.setEnabled(true);
+                    helpButton.setEnabled(true);
+                    sendFileButton.setEnabled(true);
                 }
         );
         logOutButton.addActionListener((e) ->
                 {
                     log.append("Logout button clicked\n");
-                    hostField.setEnabled(true);
-                    portField.setEnabled(true); //TODO: Change
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                    logInButton.setEnabled(true);
+                    logOutButton.setEnabled(false);
+                    listUsersButton.setEnabled(false);
+                    clearConversationButton.setEnabled(false);
+                    helpButton.setEnabled(false);
+                    sendFileButton.setEnabled(false);
                 }
         );
+
         listUsersButton.addActionListener((e) ->
                 {
                     log.append("List Users button clicked\n");
-                    hostField.setEnabled(true);
-                    portField.setEnabled(true); //TODO: Change
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
                 }
         );
         sendFileButton.addActionListener((e) ->
                 {
                     log.append("Send File button clicked\n");
-                    hostField.setEnabled(true);
-                    portField.setEnabled(true); //TODO: Change
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
                 }
         );
         helpButton.addActionListener((e) ->
                 {
                     log.append("Help button clicked\n");
-                    hostField.setEnabled(true);
-                    portField.setEnabled(true); //TODO: Change
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
                 }
         );
         clearConversationButton.addActionListener((e) ->
                 {
                     log.append("Clear Conversation button clicked\n");
-                    hostField.setEnabled(true);
-                    portField.setEnabled(true); //TODO: Change
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
                 }
         );
         
