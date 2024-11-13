@@ -45,7 +45,7 @@ public class CaesarCipher extends CharacterCipher {
      * @return a version of the cleartext ready for encrypting.
      */
     @Override
-    String prep(String cleartext) {
+    public String prep(String cleartext) {
         return cleartext.toUpperCase().replaceAll("^[A-Z]", "");
     }
 
@@ -57,7 +57,7 @@ public class CaesarCipher extends CharacterCipher {
      * @return the encryption of the preptext.
      */
     @Override
-    String encrypt(String preptext) {
+    public String encrypt(String preptext) {
         return CharacterCipher.shift(preptext, key);
     }
 
@@ -69,7 +69,7 @@ public class CaesarCipher extends CharacterCipher {
      * @return the decryption of the ciphertext.
      */
     @Override
-    String decrypt(String ciphertext) {
+    public String decrypt(String ciphertext) {
         return CharacterCipher.shift(ciphertext, -key);
     }
 }

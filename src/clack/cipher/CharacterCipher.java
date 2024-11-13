@@ -59,7 +59,7 @@ public abstract class CharacterCipher {
      * @param cleartext
      * @return a version of the cleartext ready for encrypting.
      */
-    abstract String prep(String cleartext);
+    public abstract String prep(String cleartext);
 
     /**
      * Encrypt a string that's been prepared for encryption.
@@ -67,7 +67,7 @@ public abstract class CharacterCipher {
      *                 for encryption.
      * @return the encryption of the preptext.
      */
-    abstract String encrypt(String preptext);
+    public abstract String encrypt(String preptext);
 
     /**
      * Decrypts an encrypted string. The decrypted text should match
@@ -75,5 +75,5 @@ public abstract class CharacterCipher {
      * @param ciphertext the encrypted string to decrypt.
      * @return the decryption of the ciphertext.
      */
-    abstract String decrypt(String ciphertext);
+    public abstract String decrypt(String ciphertext);
 }
