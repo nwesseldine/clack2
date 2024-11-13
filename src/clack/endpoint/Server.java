@@ -1,7 +1,7 @@
 package clack.endpoint;
 
 import clack.message.Message;
-import clack.message.MsgType;
+import clack.message.MsgTypeEnum;
 import clack.message.TextMessage;
 
 import java.io.*;
@@ -109,17 +109,23 @@ public class Server
 
                     // Process the received message
                     outMsg = switch (inMsg.getMsgType()) {
-                        case MsgType.LISTUSERS ->
+                        case MsgTypeEnum.LISTUSERS ->
                                 new TextMessage(serverName, "LISTUSERS requested");
-                        case MsgType.LOGOUT ->
+                        case MsgTypeEnum.LOGOUT ->
                                 new TextMessage(serverName, GOOD_BYE);
-                        case MsgType.TEXT ->
+                        case MsgTypeEnum.TEXT ->
                                 new TextMessage(serverName,
                                 "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
-                        case MsgType.LOGIN ->
+                        case MsgTypeEnum.LOGIN ->
                                 new TextMessage(serverName, "LOGIN requested");
-                        case MsgType.OPTION ->
+                        case MsgTypeEnum.OPTION ->
+                                // Set or report the option.
+
                                 new  TextMessage(serverName, "OPTION requested");
+                        case MsgTypeEnum.FILE ->
+                            new TextMessage(serverName, "FILE requested");
+                        case MsgTypeEnum.HELP ->
+                            new TextMessage(serverName, "HELP requested");
                     };
 
                     outObj.writeObject(outMsg);
@@ -127,7 +133,7 @@ public class Server
                     if (SHOW_TRAFFIC) {
                         System.out.println("=> " + outMsg);
                     }
-                } while (inMsg.getMsgType() != MsgType.LOGOUT);
+                } while (inMsg.getMsgType() != MsgTypeEnum.LOGOUT);
 
                 System.out.println("=== Terminating connection. ===");
             }   // Streams and socket closed by try-with-resources.

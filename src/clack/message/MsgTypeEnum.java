@@ -1,10 +1,12 @@
 package clack.message;
 
-public enum MsgType
+public enum MsgTypeEnum
 {
     LISTUSERS,
     LOGOUT,
     TEXT,
     LOGIN,
-    OPTION
+    OPTION,
+    FILE,
+    HELP
 }

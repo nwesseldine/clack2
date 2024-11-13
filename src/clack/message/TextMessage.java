@@ -7,7 +7,7 @@ public class TextMessage
 
     public TextMessage(String username, String text)
     {
-        super(username, MsgType.TEXT);
+        super(username, MsgTypeEnum.TEXT);
         this.text = text;
     }
 
