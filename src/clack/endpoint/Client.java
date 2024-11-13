@@ -118,7 +118,7 @@ public class Client {
                         outMsg = new ListUsersMessage("client"); }
 
                     case LOGIN -> {
-                        outMsg = new LoginMessage("client"); }
+                        outMsg = new LoginMessage("client", ""); }
 
                     default -> {
                         outMsg = new TextMessage("client", userInput); }
@@ -144,14 +144,13 @@ public class Client {
                     case "LOGOUT" -> new LogoutMessage("client");
                     case "LISTUSERS" -> new ListUsersMessage("client");
                     default -> new TextMessage("client", userInput);
-                    
                 };
 
                 // DELARA ADDED: sends message to server
                     outObj.writeObject(outMsg);
                     outObj.flush();
 
-            } while (outMsg.getMsgType() != MsgType.LOGOUT);
+            } while (outMsg.getMsgType() != MsgTypeEnum.LOGOUT);
 
             // Get server's closing reply and show it to user.
             inMsg = (Message) inObj.readObject();
@@ -160,9 +159,13 @@ public class Client {
                         case LISTUSERS -> "UNEXPECTED RESPONSE: " + inMsg;
                         case LOGOUT -> "UNEXPECTED RESPONSE: " + inMsg;
                         case TEXT -> ((TextMessage) inMsg).getText();
+
                         // DELARA ADDED: not sure what the actual printed statement should be for login and option
                         case LOGIN -> "LOGIN: " + inMsg;
                         case OPTION -> "UNEXPECTED RESPONSE: " + inMsg;
+                        case FILE -> null;
+                        case HELP -> null;
+
                     });
         }   // Streams and sockets closed by try-with-resources
 
