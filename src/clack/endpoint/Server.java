@@ -35,7 +35,7 @@ public class Server
     private String optionCipherkey = null;
     private String optionCipherName = null;
     private boolean optionCipherEnable = false;
-    private boolean loggedIn = true;
+    private boolean loggedIn = false;
     //cipher obj
 
     // Object variables.
@@ -105,6 +105,25 @@ public class Server
                 if (SHOW_TRAFFIC) {
                     System.out.println("=> " + outMsg);
                 }
+                do {
+                    outMsg = new TextMessage(serverName, "Enter LOGIN Information");
+                    inMsg = (Message) inObj.readObject();
+
+                    if (inMsg.getMsgType() != MsgTypeEnum.LOGIN) {
+                        break;
+                    } else {
+                        String password = ((LoginMessage) inMsg).getPassword();
+                        StringBuilder sb = new StringBuilder(password);
+                        sb.reverse();
+                        String reversed_pass = new String(sb);
+                        if (inMsg.getUsername().equals(reversed_pass)) {
+                            outMsg = new TextMessage(serverName, "LOGIN accepted");
+                            loggedIn = true;
+                        } else {
+                            outMsg = new TextMessage(serverName, "LOGIN failed");
+                        }
+                    }
+                } while (loggedIn == false) ;
 
                 // Converse with client.
                 do {
@@ -112,7 +131,6 @@ public class Server
                     if (SHOW_TRAFFIC) {
                         System.out.println("<= " + inMsg);
                     }
-                    while(loggedIn) {
                         // Process the received message
                         // Set or report the option.
                         switch (inMsg.getMsgType()) {
@@ -127,17 +145,7 @@ public class Server
                                         "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
                                 break;
                             case MsgTypeEnum.LOGIN:
-                                String password = ((LoginMessage) inMsg).getPassword();
-                                StringBuilder sb = new StringBuilder(password);
-                                sb.reverse();
-                                String reversed_pass = new String(sb);
-                                if(username == reversed_pass) {
-                                    outMsg = new TextMessage(serverName, "LOGIN accepted");
-                                }
-                                else {
-                                    loggedIn == false;
                                     outMsg = new TextMessage(serverName, "LOGIN failed");
-                                }
                                 break;
                             case MsgTypeEnum.OPTION:
                                 outMsg = new TextMessage(serverName, "OPTION requested");
@@ -151,7 +159,6 @@ public class Server
                             default:
                                 throw new IllegalArgumentException();
                         }
-                    }
 
                     outObj.writeObject(outMsg);
                     outObj.flush();
