@@ -29,6 +29,7 @@ public class Client {
     private final String prompt;
     private final String username;
 
+
     /**
      * Creates a client for exchanging Message objects.
      *
@@ -108,26 +109,24 @@ public class Client {
                 // TODO to decide what to show the user.
 
                 // DELARA ADDED: printing out a case for each message type in a switch statement
-                // should there be a case for option?
-                switch (inMsg.getMsgType()) {
-
-                    case LOGOUT -> {
-                        outMsg = new LogoutMessage("client"); }
-
-                    case LISTUSERS -> {
-                        outMsg = new ListUsersMessage("client"); }
-
-                    case LOGIN -> {
-                        outMsg = new LoginMessage("client", ""); }
-
-                    default -> {
-                        outMsg = new TextMessage("client", userInput); }
+                // ONLY NEED CASES FOR FILE AND TEXT ACCORDING TO TUINSTRA
+                outMsg = switch (inMsg.getMsgType()) {
+                    case FILE -> new FileMessage("client", " ");
+                    case TEXT -> new TextMessage("client", " ");
+                    default -> "UNEXPECTED RESPONSE";
 
                 };
 
-                System.out.print(prompt);
-                userInput = keyboard.nextLine();
-                String[] tokens = userInput.trim().split("\\s+");
+                //DELARA'S ADDITION FROM CLASS: loop
+
+                String[] tokens;
+
+                do {
+                    // Get user input
+                    System.out.print(prompt);
+                    userInput = keyboard.nextLine();
+                    tokens = userInput.trim().split("\\s+");
+                } while (tokens.length == 0);
                 
                 // DEBUG
                 // System.out.println("tokens: " + Arrays.toString(tokens));
@@ -143,6 +142,9 @@ public class Client {
                     
                     case "LOGOUT" -> new LogoutMessage("client");
                     case "LISTUSERS" -> new ListUsersMessage("client");
+                    case "LOGIN" -> new LoginMessage("client", "");
+                    case "HELP" -> new HelpMessage("client");
+                    case "OPTION" -> new OptionMessage("client");
                     default -> new TextMessage("client", userInput);
                 };
 
