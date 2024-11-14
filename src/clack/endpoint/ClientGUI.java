@@ -33,12 +33,19 @@ public class ClientGUI
         final JLabel portLabel = new JLabel("Port: ");
         final JTextField portField = new JTextField("4466", 5);
         final JPanel connectionInfoPanel = new JPanel();
-        final JPanel controlInfoPanel = new JPanel (); // new
         connectionInfoPanel.setLayout(new BoxLayout(connectionInfoPanel, BoxLayout.LINE_AXIS));
         connectionInfoPanel.add(hostLabel);
         connectionInfoPanel.add(hostField);
         connectionInfoPanel.add(portLabel);
-        connectionInfoPanel.add(portField); //TODO: Do this for controls?
+        connectionInfoPanel.add(portField);
+
+        // Control panel: host, port, buttons
+        final JPanel controlInfoPanel = new JPanel (); // TODO: Check this works
+        controlInfoPanel.setLayout(new BoxLayout(controlInfoPanel, BoxLayout.LINE_AXIS));
+        controlInfoPanel.add(hostLabel);
+        controlInfoPanel.add(hostField);
+        controlInfoPanel.add(portLabel);
+        controlInfoPanel.add(portField);
 
         // Connect and Disconnect buttons, each centered in their own
         // small pane, and these panes side-by-side.
@@ -60,7 +67,7 @@ public class ClientGUI
         connectionButtonsPanel.add(Box.createRigidArea((new Dimension(20, 0))));
         connectionButtonsPanel.add(disconnectButton);
 
-        // Add new panel with buttons.
+        // Add new control panel with buttons.
         final JPanel controlButtonsPanel = new JPanel();
         controlButtonsPanel.setLayout(new FlowLayout());
         controlButtonsPanel.add(logInButton);
@@ -94,26 +101,27 @@ public class ClientGUI
         log.setLineWrap(true);
         final JScrollPane logPane = new JScrollPane(log);
 
-        // Build questionPanel: where user enters questions
-        final JLabel questionLabel = new JLabel("Your message: ");
-        final JTextField questionField = new JTextField(30);
-        final JPanel questionPanel = new JPanel();
-        questionPanel.setBorder(BORDER);
-        questionPanel.setLayout(
-                new BoxLayout(questionPanel, BoxLayout.LINE_AXIS));
-        questionPanel.setBorder(
+        // Build messagePanel: where user enters messages
+        final JLabel messageLabel = new JLabel("Your message: ");
+        final JTextField messageField = new JTextField(30);
+        final JPanel messagePanel = new JPanel();
+        messagePanel.setBorder(BORDER);
+        messagePanel.setLayout(
+                new BoxLayout(messagePanel, BoxLayout.LINE_AXIS));
+        messagePanel.setBorder(
                 BorderFactory.createEmptyBorder(10, 5, 10, 5));
-        questionPanel.add(questionLabel);
-        questionPanel.add(questionField);
+        messagePanel.add(messageLabel);
+        messagePanel.add(messageField);
 
         // Put panels together
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Clack");
         frame.setLayout(new BorderLayout());
-        frame.add(connectionPanel, BorderLayout.NORTH); //TODO: Add control panel?
+        frame.add(connectionPanel, BorderLayout.NORTH);
+        frame.add(controlPanel, BorderLayout.NORTH); // NEW
         frame.add(logPane, BorderLayout.CENTER);
-        frame.add(questionPanel, BorderLayout.SOUTH);
+        frame.add(messagePanel, BorderLayout.SOUTH);
 
         // Wire up the listeners
         connectButton.addActionListener((e) ->
@@ -123,6 +131,13 @@ public class ClientGUI
                     hostField.setEnabled(false);
                     portField.setEnabled(false);
                     connectButton.setEnabled(false);
+                    logInButton.setEnabled(true);
+                    logOutButton.setEnabled(false);
+                    // TODO is login needed here?
+                    listUsersButton.setEnabled(true);
+                    clearConversationButton.setEnabled(true);
+                    helpButton.setEnabled(true);
+                    sendFileButton.setEnabled(true);
                 }
         );
         disconnectButton.addActionListener((e) ->
@@ -131,13 +146,75 @@ public class ClientGUI
                     hostField.setEnabled(true);
                     portField.setEnabled(true);
                     connectButton.setEnabled(true);
+                    logInButton.setEnabled(false);
+                    logOutButton.setEnabled(true);
+                    //TODO is logout needed here?
+                    listUsersButton.setEnabled(false);
+                    clearConversationButton.setEnabled(false);
+                    helpButton.setEnabled(false);
+                    sendFileButton.setEnabled(false);
                 }
         );
-        questionField.addActionListener((e) ->
-                log.append("User entered: '" + questionField.getText() + "'\n")
+        messageField.addActionListener((e) ->
+                log.append("User entered: '" + messageField.getText() + "'\n")
         );
 
         // New action listeners
+        logInButton.addActionListener((e) ->
+                {
+                    log.append("Login button clicked\n");
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                    logInButton.setEnabled(false);
+                    logOutButton.setEnabled(true);
+                    listUsersButton.setEnabled(true);
+                    clearConversationButton.setEnabled(true);
+                    helpButton.setEnabled(true);
+                    sendFileButton.setEnabled(true);
+                }
+        );
+        logOutButton.addActionListener((e) ->
+                {
+                    log.append("Logout button clicked\n");
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                    logInButton.setEnabled(true);
+                    logOutButton.setEnabled(false);
+                    listUsersButton.setEnabled(false);
+                    clearConversationButton.setEnabled(false);
+                    helpButton.setEnabled(false);
+                    sendFileButton.setEnabled(false);
+                }
+        );
+
+        listUsersButton.addActionListener((e) ->
+                {
+                    log.append("List Users button clicked\n");
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                }
+        );
+        sendFileButton.addActionListener((e) ->
+                {
+                    log.append("Send File button clicked\n");
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                }
+        );
+        helpButton.addActionListener((e) ->
+                {
+                    log.append("Help button clicked\n");
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                }
+        );
+        clearConversationButton.addActionListener((e) ->
+                {
+                    log.append("Clear Conversation button clicked\n");
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                }
+        );
         
 
         frame.pack();
