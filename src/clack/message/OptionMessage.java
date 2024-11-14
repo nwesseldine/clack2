@@ -9,10 +9,12 @@ public class OptionMessage extends Message
     {
         super(username, MsgTypeEnum.OPTION);
         this.option = op;
+        //value of cipher key/cipher sdlkfnsl
         this.value = val;
     }
 
    public OptionEnum getOption() {
+
         return this.option;
    }
 
@@ -20,5 +22,12 @@ public class OptionMessage extends Message
         return this.value;
 
    }
+    @Override
+    public String toString()
+    {
+        return "OptionMessage{"
+                + super.toString()
+                + '}';
+    }
 
 }

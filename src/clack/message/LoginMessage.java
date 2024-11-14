@@ -9,6 +9,11 @@ public class LoginMessage extends Message
         this.password = pass;
     }
 
+    public String getPassword()
+    {
+        return this.password;
+    }
+
     @Override
     public String toString()
     {

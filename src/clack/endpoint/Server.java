@@ -1,5 +1,6 @@
 package clack.endpoint;
 
+import clack.message.LoginMessage;
 import clack.message.Message;
 import clack.message.MsgTypeEnum;
 import clack.message.TextMessage;
@@ -31,6 +32,11 @@ public class Server
             "[Server listening. 'Logout' (case insensitive) closes connection.]";
     private static final String GOOD_BYE =
             "[Closing connection, good-bye.]";
+    private String optionCipherkey = null;
+    private String optionCipherName = null;
+    private boolean optionCipherEnable = false;
+    private boolean loggedIn = true;
+    //cipher obj
 
     // Object variables.
     private final int port;
@@ -106,27 +112,46 @@ public class Server
                     if (SHOW_TRAFFIC) {
                         System.out.println("<= " + inMsg);
                     }
-
-                    // Process the received message
-                    outMsg = switch (inMsg.getMsgType()) {
-                        case MsgTypeEnum.LISTUSERS ->
-                                new TextMessage(serverName, "LISTUSERS requested");
-                        case MsgTypeEnum.LOGOUT ->
-                                new TextMessage(serverName, GOOD_BYE);
-                        case MsgTypeEnum.TEXT ->
-                                new TextMessage(serverName,
-                                "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
-                        case MsgTypeEnum.LOGIN ->
-                                new TextMessage(serverName, "LOGIN requested");
-                        case MsgTypeEnum.OPTION ->
-                                // Set or report the option.
-
-                                new  TextMessage(serverName, "OPTION requested");
-                        case MsgTypeEnum.FILE ->
-                            new TextMessage(serverName, "FILE requested");
-                        case MsgTypeEnum.HELP ->
-                            new TextMessage(serverName, "HELP requested");
-                    };
+                    while(loggedIn) {
+                        // Process the received message
+                        // Set or report the option.
+                        switch (inMsg.getMsgType()) {
+                            case MsgTypeEnum.LISTUSERS:
+                                outMsg = new TextMessage(serverName, "LISTUSERS requested");
+                                break;
+                            case MsgTypeEnum.LOGOUT:
+                                outMsg = new TextMessage(serverName, GOOD_BYE);
+                                break;
+                            case MsgTypeEnum.TEXT:
+                                outMsg = new TextMessage(serverName,
+                                        "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
+                                break;
+                            case MsgTypeEnum.LOGIN:
+                                String password = ((LoginMessage) inMsg).getPassword();
+                                StringBuilder sb = new StringBuilder(password);
+                                sb.reverse();
+                                String reversed_pass = new String(sb);
+                                if(username == reversed_pass) {
+                                    outMsg = new TextMessage(serverName, "LOGIN accepted");
+                                }
+                                else {
+                                    loggedIn == false;
+                                    outMsg = new TextMessage(serverName, "LOGIN failed");
+                                }
+                                break;
+                            case MsgTypeEnum.OPTION:
+                                outMsg = new TextMessage(serverName, "OPTION requested");
+                                break;
+                            case MsgTypeEnum.FILE:
+                                outMsg = new TextMessage(serverName, "FILE requested");
+                                break;
+                            case MsgTypeEnum.HELP:
+                                outMsg = new TextMessage(serverName, "HELP requested");
+                                break;
+                            default:
+                                throw new IllegalArgumentException();
+                        }
+                    }
 
                     outObj.writeObject(outMsg);
                     outObj.flush();
