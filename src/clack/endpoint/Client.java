@@ -72,32 +72,22 @@ public class Client {
      */
     public void start() throws UnknownHostException, IOException, ClassNotFoundException
     {
-        // LANEY'S ADDITION
         ClientGUI gui = new ClientGUI(5, 5);
 
         System.out.println("Attempting connection to " + hostname + ":" + port);
-        Scanner keyboard = new Scanner(System.in);
 
         try (
-                // TODO Create a socket (named 'socket') using hostname and port.
-
-                // TODO Construct an ObjectInputStream and ObjectOutputStream on the socket.
-                // TODO Name them 'inObj' and 'outObj'
-
-                // DELARA ADDED: creates a new socket using hostname and port
                 Socket socket = new Socket(hostname, port);
 
-                // DELARA ADDED: constructs ObjectOutputStream (outObj) on the socket
                 OutputStream outStream = socket.getOutputStream();
                 ObjectOutputStream outObj = new ObjectOutputStream(outStream);
 
-                // DELARA ADDED: constructs ObjectInputStream (inObj) on socket
                 InputStream inStream = socket.getInputStream();
                 ObjectInputStream inObj = new ObjectInputStream(inStream);
-        )
 
+                Scanner keyboard = new Scanner(System.in);
+        )
         {
-            String userInput = "";
             Message inMsg;
             Message outMsg;
 
@@ -105,20 +95,14 @@ public class Client {
             do {
                 // Get server message and show it to user.
                 inMsg = (Message) inObj.readObject();
-                // TODO use a switch statement or expression, based on MsgType,
-                // TODO to decide what to show the user.
 
-                // DELARA ADDED: printing out a case for each message type in a switch statement
-                // ONLY NEED CASES FOR FILE AND TEXT ACCORDING TO TUINSTRA
                 outMsg = switch (inMsg.getMsgType()) {
-                    case FILE -> new FileMessage("client", " ");
-                    case TEXT -> new TextMessage("client", " ");
-                    default -> "UNEXPECTED RESPONSE";
-
+                    case FILE -> new FileMessage("client", "UNEXPECTED FILE ");
+                    case TEXT -> new TextMessage("client", "UNEXPECTED TEXT ");
+                    default -> new TextMessage("client", "UNEXPECTED RESPONSE" + inMsg);
                 };
 
-                //DELARA'S ADDITION FROM CLASS: loop
-
+                String userInput = keyboard.nextLine();
                 String[] tokens;
 
                 do {
@@ -132,23 +116,39 @@ public class Client {
                 // System.out.println("tokens: " + Arrays.toString(tokens));
 
                 // Construct Message based on user input and send it to server.
-                // TODO use a switch statement or expression, based on MsgType,
-                // TODO to decide what Message object to construct.
-
-                // TODO send it to the server.
-
-                // DELARA ADDED: constructs message based on user input
                 outMsg = switch (tokens[0].toUpperCase()) {
                     
-                    case "LOGOUT" -> new LogoutMessage("client");
-                    case "LISTUSERS" -> new ListUsersMessage("client");
-                    case "LOGIN" -> new LoginMessage("client", "");
-                    case "HELP" -> new HelpMessage("client");
-                    case "OPTION" -> new OptionMessage("client");
-                    default -> new TextMessage("client", userInput);
+                    case "LOGOUT" -> new LogoutMessage(username);
+                    case "LISTUSERS" -> new ListUsersMessage(username);
+                    case "LOGIN" -> {
+                        if (tokens.length < 3) {
+                            new TextMessage(username, "Invalid LOGIN ");
+                        }
+                        yield new LoginMessage(tokens[1], tokens[2]);
+                    }
+                    case "HELP" -> new HelpMessage(username);
+                    case "OPTION" -> {
+                        if (tokens.length < 3) {
+                            new TextMessage(username, "Invalid OPTION ");
+                        }
+                        OptionEnum option = null;
+                        yield new OptionMessage(username, option, tokens[2]);
+                    }
+                    case "SEND" -> {
+                        if (tokens.length < 3) {
+                            yield new TextMessage(username, "Invalid SEND ");
+                        }
+                        if ("FILE".equalsIgnoreCase(tokens[1])) {
+                            yield new FileMessage(username, tokens[2]);
+                        }
+                        else {
+                            yield new TextMessage(username, tokens[2]);
+                        }
+                    }
+                    default -> new TextMessage(username, userInput);
                 };
 
-                // DELARA ADDED: sends message to server
+                // Sends message to server
                     outObj.writeObject(outMsg);
                     outObj.flush();
 
@@ -158,17 +158,15 @@ public class Client {
             inMsg = (Message) inObj.readObject();
             System.out.println(
                     switch (inMsg.getMsgType()) {
+                        case TEXT -> ((TextMessage) inMsg).getText();
                         case LISTUSERS -> "UNEXPECTED RESPONSE: " + inMsg;
                         case LOGOUT -> "UNEXPECTED RESPONSE: " + inMsg;
-                        case TEXT -> ((TextMessage) inMsg).getText();
-
-                        // DELARA ADDED: not sure what the actual printed statement should be for login and option
-                        case LOGIN -> "LOGIN: " + inMsg;
+                        case LOGIN -> "UNEXPECTED RESPONSE: " + inMsg;
                         case OPTION -> "UNEXPECTED RESPONSE: " + inMsg;
-                        case FILE -> null;
-                        case HELP -> null;
-
+                        case FILE -> "UNEXPECTED RESPONSE: " + inMsg;
+                        case HELP -> "UNEXPECTED RESPONSE: " + inMsg;
                     });
+
         }   // Streams and sockets closed by try-with-resources
 
         System.out.println("Connection to " + hostname + ":" + port
