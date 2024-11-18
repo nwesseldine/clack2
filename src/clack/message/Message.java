@@ -13,6 +13,11 @@ public abstract class Message implements Serializable
     private final Instant timestamp;
     private final String username;
 
+    /**
+     * Constructs a message including the username and message type, as well as a time stamp.
+     * @param username the username of the message sender.
+     * @param msgTypeEnum the message type of the message being sent.
+     */
     public Message(String username, MsgTypeEnum msgTypeEnum)
     {
         this.msgTypeEnum = msgTypeEnum;
@@ -20,16 +25,28 @@ public abstract class Message implements Serializable
         this.username = username;
     }
 
+    /**
+     * Gets message type of the message being sent.
+     * @return returns message type.
+     */
     public MsgTypeEnum getMsgType()
     {
         return msgTypeEnum;
     }
 
+    /**
+     * Gets the time stamp of the message being sent.
+     * @return returns the time stamp.
+     */
     public Instant getTimestamp()
     {
         return timestamp;
     }
 
+    /**
+     * Gets the username of the user sending a message.
+     * @return returns the username.
+     */
     public String getUsername()
     {
         return username;
@@ -55,6 +72,10 @@ public abstract class Message implements Serializable
                 && Objects.equals(username, message.username);
     }
 
+    /**
+     * Assigns hashcode to the individual messages.
+     * @return returns hashcode value for the message.
+     */
     @Override
     public int hashCode()
     {
