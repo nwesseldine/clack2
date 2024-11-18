@@ -29,5 +29,11 @@ class LoginMessageTest
     @Test
     void testToString()
     {
+        LoginMessage msg = new LoginMessage ("test user", "resu tset");
+        String expected =
+                "LoginMessage{Message{msgTpeEnum=LOGIN, username='test user', password='resu tset', timestamp=}}";
+        String actual =
+                msg.toString().replaceFirst("timestamp=.*$", "timestamp=}}");
+        assertEquals(expected, actual);
     }
 }

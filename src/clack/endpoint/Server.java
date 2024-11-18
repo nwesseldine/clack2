@@ -145,6 +145,7 @@ public class Server
                                         "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
                                 break;
                             case MsgTypeEnum.LOGIN:
+                                //TODO fix this
                                     outMsg = new TextMessage(serverName, "LOGIN failed");
                                 break;
                             case MsgTypeEnum.OPTION:
