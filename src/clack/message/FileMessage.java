@@ -6,11 +6,11 @@ import java.nio.file.Path;
 
 /**
  * This is the FileMessage class for gathering a file's name and its contents.
- *  * <p>
- *  * To read a file path, the constructors will take the filepath and single out the name of
- *  * the file to read and save its name.
- *  * <p>
- *  * The file contents will then be read and saved, then printed to string when necessary.
+ *   <p>
+ *   To read a file path, the constructors will take the filepath and single out the name of
+ *   the file to read and save its name.
+ *   <p>
+ *   The file contents will then be read and saved, then printed to string when necessary.
 */
 public class FileMessage extends Message
 {

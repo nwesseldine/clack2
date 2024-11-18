@@ -5,7 +5,14 @@ import java.time.Instant;
 import java.util.Objects;
 
 /**
- * A class representing a Clack message.
+ * This is a message class for exchanging Message objects
+ *  with a client. The exchange is conversational, that is, one
+ *  side sends a Message, then waits for a reply Message from the
+ *  other side, then sends another Message, waits for a reply,
+ *  and so on.
+ *  <p>
+ *  This class handles assigning message types, assigning hashcode to each message, as well
+ *  as locating a username and timestamp for the message.
  */
 public abstract class Message implements Serializable
 {
