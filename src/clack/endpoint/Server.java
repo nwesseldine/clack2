@@ -31,7 +31,7 @@ public class Server
             "[Server listening. 'Logout' (case insensitive) closes connection.]";
     private static final String GOOD_BYE =
             "[Closing connection, good-bye.]";
-//    private String optionCipherkey = null;
+    //    private String optionCipherkey = null;
 //    private String optionCipherName = null;
 //    private String optionCipherEnable = null;
     private boolean loggedIn = false;
@@ -70,10 +70,11 @@ public class Server
      * Creates a server for exchanging Message objects, using the
      * default servername (Server.DEFAULT_SERVERNAME).
      *
-     * @param port       the port to listen on.
+     * @param port the port to listen on.
      * @throws IllegalArgumentException if port not in range [1024, 49151].
      */
-    public Server(int port) {
+    public Server(int port)
+    {
         this(port, DEFAULT_SERVERNAME);
     }
 
@@ -81,32 +82,14 @@ public class Server
     {
         String option = ((OptionMessage) inMsg).getOption().toString();
         String value = ((OptionMessage) inMsg).getValue();
-        // options.setProperty(option, value);
-        if (value == null && option == "CIPHER_KEY") {
-            //how get specifically the cipherkey value
-            if (options.getProperty(value) == null) {
-                return (new TextMessage(serverName, "There is no CipkerKey set"));
-            } else {
-                return (new TextMessage(serverName, "CipherKey is " + options.getProperty(value)));
-            }
-        } else if (value == null && option == "CIPHER_NAME") {
-            if (options.getProperty(value) == null) {
-                return (new TextMessage(serverName, "There is no name set"));
-            } else {
-                return (new TextMessage(serverName, "CIPHER_NAME is " + options.getProperty(value)));
-            }
-        } else if (value == null && option == "CIPHER_ENABLE") {
-            if (options.getProperty(value) == "false") {
-                return (new TextMessage(serverName, "Cipher is not enabled"));
-            } else {
-                //do more
-                return (new TextMessage(serverName, "Cipher is now enabled"));
-            }
+        if (value == null) {
+            return (new TextMessage(serverName, "option " + option + ": " + options.getProperty(option)));
         } else {
-            options.setProperty(option,value);
-            return (new TextMessage(serverName, "Option and value is set"));
+            options.setProperty(option, value);
+            return (new TextMessage(serverName, "option " + option + ": " + options.getProperty(option)));
         }
     }
+
     /**
      * Starts this server, listening on the port it was
      * constructed with.
@@ -119,84 +102,78 @@ public class Server
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server starting on port " + port + ".");
             System.out.println("Ctrl + C to exit.");
-            try (
-                    // Wait for connection.
-                    Socket clientSocket = serverSocket.accept();
+            while (true) {
+                try (
+                        // Wait for connection.
+                        Socket clientSocket = serverSocket.accept();
 
-                    // Build streams on the socket.
-                    ObjectInputStream inObj =
-                            new ObjectInputStream(clientSocket.getInputStream());
-                    ObjectOutputStream outObj =
-                            new ObjectOutputStream(clientSocket.getOutputStream());
-            )
-            {
-                Message inMsg;
-                Message outMsg;
+                        // Build streams on the socket.
+                        ObjectInputStream inObj =
+                                new ObjectInputStream(clientSocket.getInputStream());
+                        ObjectOutputStream outObj =
+                                new ObjectOutputStream(clientSocket.getOutputStream());
+                ) {
+                    Message inMsg;
+                    Message outMsg;
 
-                // Connection made. Greet client.
-                outMsg = new TextMessage(serverName, GREETING);
-                outObj.writeObject(outMsg);
-                outObj.flush();
-                if (SHOW_TRAFFIC) {
-                    System.out.println("=> " + outMsg);
-                }
-                do {
-                    outMsg = new TextMessage(serverName, "Enter LOGIN Information");
-                    inMsg = (Message) inObj.readObject();
-
-                    if (inMsg.getMsgType() != MsgTypeEnum.LOGIN) {
-                        break;
-                    } else {
-                        String password = ((LoginMessage) inMsg).getPassword();
-                        StringBuilder sb = new StringBuilder(password);
-                        sb.reverse();
-                        String reversed_pass = new String(sb);
-                        if (inMsg.getUsername().equals(reversed_pass)) {
-                            outMsg = new TextMessage(serverName, "LOGIN accepted");
-                            loggedIn = true;
-                        } else {
-                            outMsg = new TextMessage(serverName, "LOGIN failed");
-                        }
-                    }
-                } while (loggedIn == false) ;
-
-                // Converse with client.
-                do {
-                    inMsg = (Message) inObj.readObject();
-                    if (SHOW_TRAFFIC) {
-                        System.out.println("<= " + inMsg);
-                    }
-                        // Process the received message
-                        // Set or report the option.
-                    outMsg = switch (inMsg.getMsgType()) {
-                        case MsgTypeEnum.LISTUSERS -> new TextMessage(serverName, "LISTUSERS requested");
-                        case MsgTypeEnum.LOGOUT -> new TextMessage(serverName, GOOD_BYE);
-                        case MsgTypeEnum.TEXT -> new TextMessage(serverName,
-                                "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
-                        case MsgTypeEnum.LOGIN -> new TextMessage(serverName, "Already Logged In");
-                        case MsgTypeEnum.OPTION -> {
-                            //handleFile(---)
-//                            String option = ((OptionMessage) inMsg).getOption().toString();
-//                            String value = ((OptionMessage) inMsg).getValue();
-//                            options.setProperty(option, value);
-                            yield new TextMessage(serverName, "OPTION requested");
-                        }
-                        case MsgTypeEnum.FILE ->
-                            //call its toString message,sends a file message
-                                new TextMessage(serverName, "FILE requested");
-                        case MsgTypeEnum.HELP -> new TextMessage(serverName, "HELP requested");
-                        default -> throw new IllegalArgumentException();
-                    };
-
+                    // Connection made. Greet client.
+                    outMsg = new TextMessage(serverName, GREETING);
                     outObj.writeObject(outMsg);
                     outObj.flush();
                     if (SHOW_TRAFFIC) {
                         System.out.println("=> " + outMsg);
                     }
-                } while (inMsg.getMsgType() != MsgTypeEnum.LOGOUT);
+                    do {
+                        outMsg = new TextMessage(serverName, "Enter LOGIN Information");
+                        inMsg = (Message) inObj.readObject();
 
-                System.out.println("=== Terminating connection. ===");
-            }   // Streams and socket closed by try-with-resources.
+                        if (inMsg.getMsgType() != MsgTypeEnum.LOGIN) {
+                            break;
+                        } else {
+                            String password = ((LoginMessage) inMsg).getPassword();
+                            StringBuilder sb = new StringBuilder(password);
+                            sb.reverse();
+                            String reversed_pass = new String(sb);
+                            if (inMsg.getUsername().equals(reversed_pass)) {
+                                outMsg = new TextMessage(serverName, "LOGIN accepted");
+                                loggedIn = true;
+                            } else {
+                                outMsg = new TextMessage(serverName, "LOGIN failed");
+                            }
+                        }
+                    } while (loggedIn == false);
+
+                    // Converse with client.
+                    do {
+                        inMsg = (Message) inObj.readObject();
+                        if (SHOW_TRAFFIC) {
+                            System.out.println("<= " + inMsg);
+                        }
+                        // Process the received message
+                        // Set or report the option.
+                        outMsg = switch (inMsg.getMsgType()) {
+                            case MsgTypeEnum.LISTUSERS -> new TextMessage(serverName, "LISTUSERS requested");
+                            case MsgTypeEnum.LOGOUT -> new TextMessage(serverName, GOOD_BYE);
+                            case MsgTypeEnum.TEXT -> new TextMessage(serverName,
+                                    "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
+                            case MsgTypeEnum.LOGIN -> new TextMessage(serverName, "Already Logged In");
+                            case MsgTypeEnum.OPTION -> handleOption(((OptionMessage) inMsg));
+                            case MsgTypeEnum.FILE -> new TextMessage(serverName,
+                                    "File Saved: Name of File is " + ((FileMessage) inMsg).getFileName());
+                            case MsgTypeEnum.HELP -> new TextMessage(serverName, "HELP requested");
+                            default -> throw new IllegalArgumentException();
+                        };
+
+                        outObj.writeObject(outMsg);
+                        outObj.flush();
+                        if (SHOW_TRAFFIC) {
+                            System.out.println("=> " + outMsg);
+                        }
+                    } while (inMsg.getMsgType() != MsgTypeEnum.LOGOUT);
+
+                    System.out.println("=== Terminating connection. ===");
+                }   // Streams and socket closed by try-with-resources.
+            }
         } // Server socket closed by try-with-resources.
     }
 }
