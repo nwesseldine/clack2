@@ -1,28 +1,57 @@
 package clack.message;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
-class OptionMessageTest
-{
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    @org.junit.jupiter.api.Test
-    void getOption()
-    {
+class OptionMessageTest {
+
+    /**
+     * Test all OptionEnum values.
+     */
+    @Test
+    void getOption() {
+        for (OptionEnum opt : OptionEnum.values()) {
+            OptionMessage om = new OptionMessage("user", opt, "setting");
+            assertEquals(opt, om.getOption());
+        }
     }
 
-    @org.junit.jupiter.api.Test
-    void getValue()
-    {
+    /**
+     * Test for value of null, empty string, non-empty string.
+     */
+    @Test
+    void getValue() {
+        OptionEnum opt = OptionEnum.CIPHER_KEY;
+        String[] values = {null, "", "playfair"};
+        for (String v : values) {
+            OptionMessage om = new OptionMessage("user", opt, v);
+            assertEquals(v, om.getValue());
+        }
     }
 
-    @org.junit.jupiter.api.Test
-    void testToString()
-    {
-        OptionMessage msg = new OptionMessage ("test user", OptionEnum.CIPHER_NAME, "Playwright" );
-        String expected =
-                "OptionMessage{Message{msgTpeEnum=OPTION, username='test user', lfngerlnglreng, timestamp=}}";
-        String actual =
-                msg.toString().replaceFirst("timestamp=.*$", "timestamp=}}");
-        assertEquals(expected, actual);
+    /**
+     * Test toString. Match all fields except for timestamp.
+     * Test for value of null, empty string, non-empty string.
+     */
+    @Test
+    void testToString() {
+        OptionEnum opt = OptionEnum.CIPHER_KEY;
+        String[] values = {null, "", "playfair"};
+        for (String v : values) {
+            OptionMessage om = new OptionMessage("user", opt, v);
+            String expected = "OptionMessage{"
+                    + "Message{msgTypeEnum=OPTION"
+                    + ", timestamp=omitted"
+                    + ", username='user'"
+                    + "}"
+                    + ", option=" + opt.toString()
+                    + ", value='" + v
+                    + "'}";
+            String actual = om.toString().replaceFirst(
+                    "timestamp=.*, username=",
+                    "timestamp=omitted, username=");
+            assertEquals(expected, actual);
+        }
     }
 }

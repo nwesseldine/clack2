@@ -1,13 +1,12 @@
 package clack.endpoint;
 
-import clack.message.LoginMessage;
-import clack.message.Message;
-import clack.message.MsgTypeEnum;
-import clack.message.TextMessage;
+import clack.cipher.CharacterCipher;
+import clack.message.*;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
 
 /**
  * This is a simple server class for exchanging Message objects
@@ -32,16 +31,18 @@ public class Server
             "[Server listening. 'Logout' (case insensitive) closes connection.]";
     private static final String GOOD_BYE =
             "[Closing connection, good-bye.]";
-    private String optionCipherkey = null;
-    private String optionCipherName = null;
-    private boolean optionCipherEnable = false;
+//    private String optionCipherkey = null;
+//    private String optionCipherName = null;
+//    private String optionCipherEnable = null;
     private boolean loggedIn = false;
-    //cipher obj
+    private Properties options;
+    private CharacterCipher cipher;
 
     // Object variables.
     private final int port;
     private final String serverName;
     private final boolean SHOW_TRAFFIC = true;      // FOR DEBUGGING
+
 
     /**
      * Creates a server for exchanging Message objects.
@@ -59,6 +60,10 @@ public class Server
         }
         this.port = port;
         this.serverName = serverName;
+        options = new Properties();
+        options.setProperty("CIPHER_KEY", "");
+        options.setProperty("CIPHER_NAME", "");
+        options.setProperty("CIPHER_ENABLE", "false");
     }
 
     /**
@@ -72,6 +77,36 @@ public class Server
         this(port, DEFAULT_SERVERNAME);
     }
 
+    public Message handleOption(Message inMsg)
+    {
+        String option = ((OptionMessage) inMsg).getOption().toString();
+        String value = ((OptionMessage) inMsg).getValue();
+        // options.setProperty(option, value);
+        if (value == null && option == "CIPHER_KEY") {
+            //how get specifically the cipherkey value
+            if (options.getProperty(value) == null) {
+                return (new TextMessage(serverName, "There is no CipkerKey set"));
+            } else {
+                return (new TextMessage(serverName, "CipherKey is " + options.getProperty(value)));
+            }
+        } else if (value == null && option == "CIPHER_NAME") {
+            if (options.getProperty(value) == null) {
+                return (new TextMessage(serverName, "There is no name set"));
+            } else {
+                return (new TextMessage(serverName, "CIPHER_NAME is " + options.getProperty(value)));
+            }
+        } else if (value == null && option == "CIPHER_ENABLE") {
+            if (options.getProperty(value) == "false") {
+                return (new TextMessage(serverName, "Cipher is not enabled"));
+            } else {
+                //do more
+                return (new TextMessage(serverName, "Cipher is now enabled"));
+            }
+        } else {
+            options.setProperty(option,value);
+            return (new TextMessage(serverName, "Option and value is set"));
+        }
+    }
     /**
      * Starts this server, listening on the port it was
      * constructed with.
@@ -133,33 +168,25 @@ public class Server
                     }
                         // Process the received message
                         // Set or report the option.
-                        switch (inMsg.getMsgType()) {
-                            case MsgTypeEnum.LISTUSERS:
-                                outMsg = new TextMessage(serverName, "LISTUSERS requested");
-                                break;
-                            case MsgTypeEnum.LOGOUT:
-                                outMsg = new TextMessage(serverName, GOOD_BYE);
-                                break;
-                            case MsgTypeEnum.TEXT:
-                                outMsg = new TextMessage(serverName,
-                                        "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
-                                break;
-                            case MsgTypeEnum.LOGIN:
-                                //TODO fix this
-                                    outMsg = new TextMessage(serverName, "LOGIN failed");
-                                break;
-                            case MsgTypeEnum.OPTION:
-                                outMsg = new TextMessage(serverName, "OPTION requested");
-                                break;
-                            case MsgTypeEnum.FILE:
-                                outMsg = new TextMessage(serverName, "FILE requested");
-                                break;
-                            case MsgTypeEnum.HELP:
-                                outMsg = new TextMessage(serverName, "HELP requested");
-                                break;
-                            default:
-                                throw new IllegalArgumentException();
+                    outMsg = switch (inMsg.getMsgType()) {
+                        case MsgTypeEnum.LISTUSERS -> new TextMessage(serverName, "LISTUSERS requested");
+                        case MsgTypeEnum.LOGOUT -> new TextMessage(serverName, GOOD_BYE);
+                        case MsgTypeEnum.TEXT -> new TextMessage(serverName,
+                                "TEXT: '" + ((TextMessage) inMsg).getText() + "'");
+                        case MsgTypeEnum.LOGIN -> new TextMessage(serverName, "Already Logged In");
+                        case MsgTypeEnum.OPTION -> {
+                            //handleFile(---)
+//                            String option = ((OptionMessage) inMsg).getOption().toString();
+//                            String value = ((OptionMessage) inMsg).getValue();
+//                            options.setProperty(option, value);
+                            yield new TextMessage(serverName, "OPTION requested");
                         }
+                        case MsgTypeEnum.FILE ->
+                            //call its toString message,sends a file message
+                                new TextMessage(serverName, "FILE requested");
+                        case MsgTypeEnum.HELP -> new TextMessage(serverName, "HELP requested");
+                        default -> throw new IllegalArgumentException();
+                    };
 
                     outObj.writeObject(outMsg);
                     outObj.flush();

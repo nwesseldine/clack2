@@ -2,38 +2,33 @@ package clack.message;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.jupiter.api.Assertions.*;
+class LoginMessageTest {
 
-class LoginMessageTest
-{
-    @org.junit.jupiter.api.Test
-    void testConstructor(){
-        LoginMessage msg = new LoginMessage("test user", "resu tset");
-        Instant now = Instant.now();
-
-        assertEquals("test user", msg.getUsername());
-        assertEquals(MsgTypeEnum.LOGIN,msg.getMsgType());
-
-        assertTrue(Math.abs((now.getEpochSecond()
-                - msg.getTimestamp().getEpochSecond())) <= 1);
-        //what else
+    /**
+     * Test getPassword.
+     */
+    @Test
+    void getPassword() {
+        LoginMessage lm = new LoginMessage("user", "opensesame");
+        assertEquals("opensesame", lm.getPassword());
     }
 
+    /**
+     * Test toString. Match all fields except for timestamp.
+     */
     @Test
-    void getPassword()
-    {
-    }
-
-    @Test
-    void testToString()
-    {
-        LoginMessage msg = new LoginMessage ("test user", "resu tset");
-        String expected =
-                "LoginMessage{Message{msgTpeEnum=LOGIN, username='test user', password='resu tset', timestamp=}}";
-        String actual =
-                msg.toString().replaceFirst("timestamp=.*$", "timestamp=}}");
+    void testToString() {
+        LoginMessage lm = new LoginMessage("user", "opensesame");
+        String expected = "LoginMessage{"
+                + "Message{msgTypeEnum=LOGIN"
+                + ", timestamp=omitted"
+                + ", username='user'"
+                + "}, password='**********'}";
+        String actual = lm.toString().replaceFirst(
+                "timestamp=.*, username=",
+                "timestamp=omitted, username=");
         assertEquals(expected, actual);
     }
 }

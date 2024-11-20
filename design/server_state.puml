@@ -4,32 +4,83 @@ hide empty description
 'scale 350 width
 
 [*] --> ConnectionWait
-ConnectionWait --> SendGreeting : accept
-SendGreeting --> LoginWait : TextMsg
+ConnectionWait --> SendGreeting : accept()
+SendGreeting --> LoginWait : TextMsg>
 
-LoginWait --> CheckLogin : LoginMsg
-LoginWait --> SendGreeting : all other msgs
-CheckLogin --> SendLoginFail : invalid
-SendLoginFail --> SendGreeting : TextMsg
+LoginWait --> CheckLogin : >LoginMsg
+LoginWait --> SendGreeting : >all other msgs
 CheckLogin --> SendLoginConfirm : valid
-SendLoginConfirm --> CmdWait : TextMsg
-CmdWait --> ConnectionWait : LogoutMsg
+SendLoginConfirm --> CmdWait : TextMsg>
+CheckLogin --> SendLoginFail : invalid
+SendLoginFail --> SendGreeting : TextMsg>
 
-CmdWait --> BuildUserListReply : ListUsersMsg
-CmdWait --> SetOption : OptionMsg w/ setting
-CmdWait --> BuildOptionReply : OptionMsg w/o setting
+CmdWait -up-> SendGoodbye : >LogoutMsg
+SendGoodbye -up-> ConnectionWait : TextMsg>
+
+CmdWait --> BuildHelpReply : >HelpMsg
+CmdWait --> BuildUserListReply : >ListUsersMsg
+CmdWait --> SetOption : >OptionMsg w/ setting
+CmdWait --> BuildOptionReply : >OptionMsg w/o setting
 SetOption --> BuildOptionReply
-CmdWait --> SaveFile : FileMsg
-SaveFile --> BuildSaveOKReply
-SaveFile --> BuildSaveFailReply
-CmdWait --> BuildEchoReply : TextMsg
 
+''''''''''
+'CmdWait --> SaveFile : >FileMsg
+'SaveFile --> BuildSaveOKReply
+'SaveFile --> BuildSaveFailReply
+'BuildSaveOKReply --> SendReply
+'BuildSaveFailReply --> SendReply
+CmdWait --> filedc : >FileMsg
+
+state "FileMsg Handling Choice" as filedc {
+    [*] --> SaveFile
+    SaveFile --> BuildOKReply : succeed
+    SaveFile --> BuildFailReply : fail
+    --
+    [*] --> BuildTextAckReply
+    --
+    [*] --> BuildFileReply
+}
+filedc --> SendReply
+
+
+''''''''''
+CmdWait --> BuildEchoReply : >TextMsg
+BuildHelpReply --> SendReply
 BuildUserListReply --> SendReply
 BuildOptionReply --> SendReply
-BuildSaveOKReply --> SendReply
-BuildSaveFailReply --> SendReply
 BuildEchoReply --> SendReply
 
-SendReply --> CmdWait : TextMsg
+SendReply --> CmdWait : TextMsg or\n FileMsg>
 
 @enduml
+
+'[*] --> ConnectionWait
+'ConnectionWait --> SendGreeting : accept
+'SendGreeting --> LoginWait : TextMsg
+'
+'LoginWait --> CheckLogin : LoginMsg
+'LoginWait --> SendGreeting : all other msgs
+'CheckLogin --> SendLoginFail : invalid
+'SendLoginFail --> SendGreeting : TextMsg
+'CheckLogin --> SendLoginConfirm : valid
+'SendLoginConfirm --> CmdWait : TextMsg
+'CmdWait --> ConnectionWait : LogoutMsg
+'
+'CmdWait --> BuildUserListReply : ListUsersMsg
+'CmdWait --> SetOption : OptionMsg w/ setting
+'CmdWait --> BuildOptionReply : OptionMsg w/o setting
+'SetOption --> BuildOptionReply
+'CmdWait --> SaveFile : FileMsg
+'SaveFile --> BuildSaveOKReply
+'SaveFile --> BuildSaveFailReply
+'CmdWait --> BuildEchoReply : TextMsg
+'
+'BuildUserListReply --> SendReply
+'BuildOptionReply --> SendReply
+'BuildSaveOKReply --> SendReply
+'BuildSaveFailReply --> SendReply
+'BuildEchoReply --> SendReply
+'
+'SendReply --> CmdWait : TextMsg
+'
+'@enduml
