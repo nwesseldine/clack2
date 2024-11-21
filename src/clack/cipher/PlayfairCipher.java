@@ -7,6 +7,9 @@ public class PlayfairCipher {
 
     // this constructor initializes the PlayFair cipher by generating the key matrix using the key
     public PlayfairCipher(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Null ");
+        }
         generateMatrix(key);
     }
 
