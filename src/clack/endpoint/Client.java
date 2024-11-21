@@ -72,7 +72,7 @@ public class Client {
      */
     public void start() throws UnknownHostException, IOException, ClassNotFoundException
     {
-        ClientGUI gui = new ClientGUI(5, 5);
+       // ClientGUI gui = new ClientGUI(5, 5);
 
         System.out.println("Attempting connection to " + hostname + ":" + port);
 

@@ -19,10 +19,11 @@ import java.awt.*;
 
 public class ClientGUI
 {
+    private Client client;
     /**
      * Constructs a client GUI.
      */
-    public ClientGUI(int x, int y)
+    public ClientGUI(int x, int y, Client client)
     {
         final Border BORDER =
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY);
@@ -40,7 +41,7 @@ public class ClientGUI
         connectionInfoPanel.add(portField);
 
         // Control panel: host, port, buttons
-        final JPanel controlInfoPanel = new JPanel (); // TODO: Check this works
+        final JPanel controlInfoPanel = new JPanel ();
         controlInfoPanel.setLayout(new BoxLayout(controlInfoPanel, BoxLayout.LINE_AXIS));
         controlInfoPanel.add(hostLabel);
         controlInfoPanel.add(hostField);
@@ -222,6 +223,12 @@ public class ClientGUI
         frame.setVisible(true);
     }
 
+    public static void main(String[] args){
+        SwingUtilities.invokeLater(() -> {
+            Client client = new Client("localhost", 4466);
+            new ClientGUI(10,5,client);
+        });
+    }
 
 
 }
