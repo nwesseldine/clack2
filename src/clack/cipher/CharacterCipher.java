@@ -22,9 +22,9 @@ public abstract class CharacterCipher {
 
     public static int mod(int n, int modulus) {
         if (modulus < 1) {
-            throw IllegalArgumentException("modulus must be >= 1");
+            throw new IllegalArgumentException("modulus must be >= 1");
         }
-        return ((n % modulus) + modulus) % modulus);
+        return ((n % modulus) + modulus) % modulus;
     }
 
     /**
@@ -89,4 +89,20 @@ public abstract class CharacterCipher {
      * @return the decryption of the ciphertext.
      */
     public abstract String decrypt(String ciphertext);
+
+    /**
+     * Removes all non-alphabet characters from a string, and
+     * uppercases all remaining letters. This is a utility
+     * method, useful in implementing prep(). If the argument
+     * is null or empty, returns it as it is.
+     *
+     * @param str the string to clean
+     * @return the cleaned string (which might be empty), or null.
+     */
+    public static String clean(String str) {
+        if (str == null) {
+            return null;
+        }
+        return str.toUpperCase().replaceAll("[^A-Z]", "");
+    }
 }
