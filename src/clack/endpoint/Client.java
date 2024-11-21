@@ -131,7 +131,7 @@ public class Client {
                         if (tokens.length < 3) {
                             new TextMessage(username, "Invalid OPTION ");
                         }
-                        OptionEnum option = null;
+                        OptionEnum option = OptionEnum.valueOf(tokens[1]);
                         yield new OptionMessage(username, option, tokens[2]);
                     }
                     case "SEND" -> {
