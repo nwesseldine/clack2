@@ -38,13 +38,13 @@ public class PlayfairCipher {
 
     // this method encrypts a given plaintext message using PlayFair cipher
     public String encrypt (String plaintext) {
-        plaintext = prepareText(plaintext);
+        plaintext = prep(plaintext);
         StringBuilder ciphertext = new StringBuilder();
 
         for (int i = 0; i < plaintext.length(); i += 2) {
             char first = plaintext.charAt(i);
             char second = plaintext.charAt(i + 1);
-            ciphertext.append(encryptDigraph(first, second));
+            ciphertext.append(encrypt(first, second));
         }
 
         return ciphertext.toString();
@@ -57,7 +57,7 @@ public class PlayfairCipher {
         for (int i  = 0; i < ciphertext.length(); i += 2) {
             char first = ciphertext.charAt(i);
             char second = ciphertext.charAt(i + 1);
-            plaintext.append(decryptDigraph(first, second));
+            plaintext.append(decrypt(first, second));
         }
 
         return plaintext.toString();
@@ -65,7 +65,7 @@ public class PlayfairCipher {
 
     // prepares the plaintext, converts to uppercase, replaces all Js with Is,
     // removes spaces, appends X if length is odd to ensure pairs
-    private String prepareText (String text) {
+    private String prep(String text) {
         text = text.toUpperCase().replaceAll("J", "I").replaceAll("\\s", "");
         if (text.length() % 2 != 0) {
             text += "X";
@@ -76,7 +76,7 @@ public class PlayfairCipher {
     // if two letters are in same row, shift right
     // if they are in same column, shift down
     // if they form a rectangle, swap the columns
-    private String encryptDigraph (char first, char second) {
+    private String encrypt (char first, char second) {
         int[] firstPos = findPosition(first);
         int[] secondPos = findPosition(second);
 
@@ -92,7 +92,7 @@ public class PlayfairCipher {
     // opposite of encryptDigraph, if in same row, shift left
     // if in same column, shift up
     // if forming a rectangle, swap the columns
-    private String decryptDigraph(char firstChar, char secondChar) {
+    private String decrypt (char firstChar, char secondChar) {
         int[] firstPos = findPosition(firstChar);
         int[] secondPos = findPosition(secondChar);
 
