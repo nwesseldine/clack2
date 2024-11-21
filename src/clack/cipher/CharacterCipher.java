@@ -1,5 +1,5 @@
 package clack.cipher;
-
+//
 /**
  * Abstract class for ciphers that work on character data.
  */
@@ -20,6 +20,13 @@ public abstract class CharacterCipher {
         return "";
     }
 
+    public static int mod(int n, int modulus) {
+        if (modulus < 1) {
+            throw IllegalArgumentException("modulus must be >= 1");
+        }
+        return ((n % modulus) + modulus) % modulus);
+    }
+
     /**
      * Returns the character that is n letters further on in ALPHABET,
      * with wrap around at the end of ALPHABET. Negative values are
@@ -36,7 +43,9 @@ public abstract class CharacterCipher {
                     "Argument ('" + c + "') not in ALPHABET");
         }
         // TODO implement remainder of this.
-        return ' ';
+        int cPos = ALPHABET.indexOf(c);
+        int shiftPos = (cPos + n) % ALPHABET.length();
+        return ALPHABET.charAt(shiftPos);
     }
 
     /**
@@ -48,7 +57,11 @@ public abstract class CharacterCipher {
      */
     public static String shift(String str, int n) {
         // TODO implement this.
-        return "";
+        char[] chars = str.toCharArray();
+        for (int i = 0; i < chars.length; ++i) {
+            chars[i] = shift(chars[i], n);
+        }
+        return new String(chars);
     }
 
     /**
