@@ -24,7 +24,7 @@ public class CaesarCipher extends CharacterCipher {
      * @param key the string whose first letter determines the shift.
      */
     public CaesarCipher(String key) {
-        if (key == null || key.equals("")) {
+        if (key == null || key.isEmpty()) {
             throw new IllegalArgumentException(
                     "Need a non-null, non-empty string");
         }
@@ -46,7 +46,7 @@ public class CaesarCipher extends CharacterCipher {
      */
     @Override
     public String prep(String cleartext) {
-        return cleartext.toUpperCase().replaceAll("^[A-Z]", "");
+        return clean(cleartext);
     }
 
     /**
