@@ -40,7 +40,7 @@ public class VignereCipher {
     }
 
     // prepares input by removing non-alphabetic characters and converting to uppercase
-    private String prepareText (String text) {
+    public String prepareText (String text) {
         return text.toUpperCase().replaceAll("[A-Z]", "");
     }
 }

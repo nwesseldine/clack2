@@ -10,7 +10,7 @@ public class PlayfairCipher {
         generateMatrix(key);
     }
 
-    private void generateMatrix(String key) {
+    public void generateMatrix(String key) {
         // replaces all Js in key with letter I. J is one of the most uncommon letters in English,
         // and we need to drop one letter in the alphabet (26 letters) because 5x5=25.
         key = key.toUpperCase().replaceAll("J", "I");
@@ -65,7 +65,7 @@ public class PlayfairCipher {
 
     // prepares the plaintext, converts to uppercase, replaces all Js with Is,
     // removes spaces, appends X if length is odd to ensure pairs
-    private String prep(String text) {
+    public String prep(String text) {
         text = text.toUpperCase().replaceAll("J", "I").replaceAll("\\s", "");
         if (text.length() % 2 != 0) {
             text += "X";
@@ -76,7 +76,7 @@ public class PlayfairCipher {
     // if two letters are in same row, shift right
     // if they are in same column, shift down
     // if they form a rectangle, swap the columns
-    private String encrypt (char first, char second) {
+    public String encrypt (char first, char second) {
         int[] firstPos = findPosition(first);
         int[] secondPos = findPosition(second);
 
@@ -92,7 +92,7 @@ public class PlayfairCipher {
     // opposite of encryptDigraph, if in same row, shift left
     // if in same column, shift up
     // if forming a rectangle, swap the columns
-    private String decrypt (char firstChar, char secondChar) {
+    public String decrypt (char firstChar, char secondChar) {
         int[] firstPos = findPosition(firstChar);
         int[] secondPos = findPosition(secondChar);
 
@@ -106,7 +106,7 @@ public class PlayfairCipher {
     }
 
     // method that finds the row and column of a character in the matrix
-    private int[] findPosition (char c) {
+    public int[] findPosition (char c) {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (matrix[i][j] == c) {
