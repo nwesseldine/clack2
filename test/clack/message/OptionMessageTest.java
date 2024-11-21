@@ -13,7 +13,7 @@ class OptionMessageTest {
     void getOption() {
         for (OptionEnum opt : OptionEnum.values()) {
             OptionMessage om = new OptionMessage("user", opt, "setting");
-            assertEquals(opt, om.getOption());
+            assertEquals(opt, om.getOption()) ;
         }
     }
 
