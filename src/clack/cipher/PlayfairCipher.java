@@ -1,13 +1,12 @@
 package clack.cipher;
-import java.util.Arrays;
 
-public class PlayFairCipher {
+public class PlayfairCipher {
 
     // the PlayFair cipher is a 5x5 matrix
     private char[][] matrix;
 
     // this constructor initializes the PlayFair cipher by generating the key matrix using the key
-    public PlayFairCipher(String key) {
+    public PlayfairCipher(String key) {
         generateMatrix(key);
     }
 
