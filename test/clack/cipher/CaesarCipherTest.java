@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static clack.cipher.CharacterCipher.ALPHABET;
 //import static clack.cipher.CharacterCipher.clean;
+import static clack.cipher.CharacterCipher.clean;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

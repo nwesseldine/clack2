@@ -2,6 +2,7 @@ package clack.cipher;
 
 import org.junit.jupiter.api.Test;
 
+import static clack.cipher.PlayfairCipher.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayfairCipherTest {
@@ -55,5 +56,6 @@ class PlayfairCipherTest {
         prepText = pc.prep("... hours could seem ljke days.");
         assertEquals(prepText, pc.decrypt("FQPCCLPNDFISSEDSBAFIZE"));
     }
+
 
 }
