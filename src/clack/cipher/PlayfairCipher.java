@@ -7,8 +7,8 @@ public class PlayfairCipher {
 
     // this constructor initializes the PlayFair cipher by generating the key matrix using the key
     public PlayfairCipher(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("Null ");
+        if (key == null || key.isEmpty()) {
+            throw new IllegalArgumentException("Key cannot be null or empty. ");
         }
         generateMatrix(key);
     }
@@ -41,6 +41,10 @@ public class PlayfairCipher {
 
     // this method encrypts a given plaintext message using PlayFair cipher
     public String encrypt (String plaintext) {
+
+        if (plaintext == null) {
+            throw new IllegalArgumentException("Plaintext cannot be null. ");
+        }
         plaintext = prep(plaintext);
         StringBuilder ciphertext = new StringBuilder();
 
@@ -55,6 +59,10 @@ public class PlayfairCipher {
 
     // this method basically reverses the encryption process
     public String decrypt (String ciphertext) {
+
+        if (ciphertext == null) {
+            throw new IllegalArgumentException("Ciphertext cannot be null. ");
+        }
         StringBuilder plaintext = new StringBuilder();
 
         for (int i  = 0; i < ciphertext.length(); i += 2) {
@@ -69,7 +77,11 @@ public class PlayfairCipher {
     // prepares the plaintext, converts to uppercase, replaces all Js with Is,
     // removes spaces, appends X if length is odd to ensure pairs
     public String prep(String text) {
-        text = text.toUpperCase().replaceAll("J", "I").replaceAll("\\s", "");
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null. ");
+        }
+        text = text.toUpperCase().replaceAll("[^A–Z]", "").replaceAll("J", "I");
         if (text.length() % 2 != 0) {
             text += "X";
         }

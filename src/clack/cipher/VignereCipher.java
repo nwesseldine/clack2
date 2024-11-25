@@ -6,6 +6,9 @@ public class VignereCipher {
 
     // initializes the VignereCipher with a given key, converts to uppercase
     public VignereCipher(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException("The key cannot be null. ");
+        }
         this.key = key.toUpperCase();
     }
 

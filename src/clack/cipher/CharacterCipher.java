@@ -16,8 +16,22 @@ public abstract class CharacterCipher {
      * @return the grouped version of the argument string
      */
     public static String group(String str, int n) {
-        // TODO implement this
-        return "";
+        if (str == null || n <= 0) {
+            throw new IllegalArgumentException("String cannot be null, n must be greater than 0. ");
+        }
+        if (str.isEmpty()) {
+            return "";
+        }
+        str = str.replaceAll("\\s+", "");
+        StringBuilder groups = new StringBuilder();
+
+        for (int i = 0; i < str.length(); i++) {
+            if (i > 0 && i % n == 0) {
+                groups.append(" ");
+            }
+            groups.append(str.charAt(i));
+        }
+        return groups.toString();
     }
 
     public static int mod(int n, int modulus) {
@@ -38,11 +52,10 @@ public abstract class CharacterCipher {
      * @throws IllegalArgumentException if c is not in ALPHABET.
      */
     public static char shift(char c, int n) {
-        if (ALPHABET.indexOf(c) < 0 ) {
+        if (ALPHABET.indexOf(c) == -1) {
             throw new IllegalArgumentException(
                     "Argument ('" + c + "') not in ALPHABET");
         }
-        // TODO implement remainder of this.
         int cPos = ALPHABET.indexOf(c);
         int shiftPos = (cPos + n) % ALPHABET.length();
         return ALPHABET.charAt(shiftPos);
@@ -56,12 +69,27 @@ public abstract class CharacterCipher {
      * @return the shifted version of str.
      */
     public static String shift(String str, int n) {
-        // TODO implement this.
-        char[] chars = str.toCharArray();
-        for (int i = 0; i < chars.length; ++i) {
-            chars[i] = shift(chars[i], n);
+        if (str == null) {
+            throw new IllegalArgumentException("String cannot be null. ");
         }
-        return new String(chars);
+        StringBuilder result = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            int i = ALPHABET.indexOf(c);
+            if (i == -1) {
+                throw new IllegalArgumentException("Character not in ALPHABET. ");
+            }
+
+            int shiftedIndex = (i + n + ALPHABET.length()) % ALPHABET.length();
+            result.append(ALPHABET.charAt(shiftedIndex));
+        }
+
+        return result.toString();
+
+//        char[] chars = str.toCharArray();
+//        for (int i = 0; i < chars.length; ++i) {
+//            chars[i] = shift(chars[i], n);
+//        }
+//        return new String(chars);
     }
 
     /**

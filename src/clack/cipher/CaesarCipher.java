@@ -13,7 +13,11 @@ public class CaesarCipher extends CharacterCipher {
      * @param key how far to shift each letter.
      */
     public CaesarCipher(int key) {
-        this.key = key % ALPHABET.length();
+        if (key == 0) {
+            throw new IllegalArgumentException(
+                    "Key of 0 results in null cipher. ");
+        }
+        this.key = (key % ALPHABET.length() + ALPHABET.length()) % ALPHABET.length();
     }
 
     /**
@@ -73,3 +77,4 @@ public class CaesarCipher extends CharacterCipher {
         return CharacterCipher.shift(ciphertext, -key);
     }
 }
+
