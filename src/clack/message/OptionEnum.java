@@ -1,5 +1,8 @@
 package clack.message;
 
+/**
+ * This is a simple enum for the option the user has for choosing a cipher.
+ */
 public enum OptionEnum
 {
     CIPHER_KEY,

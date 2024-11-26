@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Simple Help Message class. Uses the username of the sender, the timestamp of the message, and creates a help message.
+ */
 class HelpMessageTest {
 
     /**

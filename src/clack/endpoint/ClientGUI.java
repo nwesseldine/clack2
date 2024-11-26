@@ -110,7 +110,7 @@ public class ClientGUI
         messagePanel.setLayout(
                 new BoxLayout(messagePanel, BoxLayout.LINE_AXIS));
         messagePanel.setBorder(
-                BorderFactory.createEmptyBorder(10, 5, 70, 5));
+                BorderFactory.createEmptyBorder(10, 5, 50, 5));
         messagePanel.add(messageLabel);
         messagePanel.add(messageField);
 
@@ -168,7 +168,7 @@ public class ClientGUI
         JTextField usernameField = new JTextField(15);
         JPasswordField passwordField = new JPasswordField(15);
 
-        dialoguePanel.add(loginLabel, BorderLayout.NORTH);
+        dialoguePanel.add(loginLabel, BorderLayout.WEST);
 
         JPanel inputPanel = new JPanel();
         inputPanel.add(new JLabel("username:"));
@@ -184,23 +184,38 @@ public class ClientGUI
         frame.revalidate();
         frame.repaint();
 
+        //"Submit" Functionality
+
+
+
         dialoguePanel.setVisible(false);
         inputPanel.setVisible(false);
+        logInButton.setEnabled(false);
+        logOutButton.setEnabled(false);
+        listUsersButton.setEnabled(false);
+        clearConversationButton.setEnabled(false);
+        helpButton.setEnabled(false);
+        sendFileButton.setEnabled(false);
 
         // New action listeners
         submitButton.addActionListener((e) ->
                 {
-                    dialoguePanel.setVisible(false);
+                    String username = usernameField.getText();
+                    String password = new String(passwordField.getPassword());
+                    JOptionPane.showMessageDialog(frame, "Login Successful: " + username);
+                    frame.remove(dialoguePanel);
+                    frame.revalidate();
+                    frame.repaint();
                     inputPanel.setVisible(false);
-                    log.append("Submit button clicked\n");
-                    hostField.setEnabled(false);
-                    portField.setEnabled(false);
-                    logInButton.setEnabled(false);
-                    logOutButton.setEnabled(true);
-                    listUsersButton.setEnabled(true);
-                    clearConversationButton.setEnabled(true);
-                    helpButton.setEnabled(true);
-                    sendFileButton.setEnabled(true);
+//                    log.append("Submit button clicked\n");
+//                    hostField.setEnabled(false);
+//                    portField.setEnabled(false);
+//                    logInButton.setEnabled(false);
+//                    logOutButton.setEnabled(true);
+//                    listUsersButton.setEnabled(true);
+//                    clearConversationButton.setEnabled(true);
+//                    helpButton.setEnabled(true);
+//                    sendFileButton.setEnabled(true);
                 }
         );
         logInButton.addActionListener((e) ->
@@ -220,6 +235,10 @@ public class ClientGUI
         );
         logOutButton.addActionListener((e) ->
                 {
+                    JOptionPane.showMessageDialog(frame, "Are you sure you want to log out?");
+                    frame.remove(dialoguePanel);
+                    frame.revalidate();
+                    frame.repaint();
                     log.append("Logout button clicked\n");
                     frame.dispose();
                 }
@@ -234,6 +253,10 @@ public class ClientGUI
         );
         sendFileButton.addActionListener((e) ->
                 {
+                    JOptionPane.showMessageDialog(frame, "Send this file?"); //TODO: how would they submit this
+                    frame.remove(dialoguePanel);
+                    frame.revalidate();
+                    frame.repaint();
                     log.append("Send File button clicked\n");
                     hostField.setEnabled(false);
                     portField.setEnabled(false);
@@ -261,6 +284,10 @@ public class ClientGUI
         frame.setVisible(true);
     }
 
+    /**
+     * Create a "main-like" environment to declare a client gui object.
+     * @param args
+     */
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
             Client client = new Client("localhost", 4466);
