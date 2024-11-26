@@ -1,7 +1,7 @@
 package clack.cipher;
 //
 /**
- * Abstract class for ciphers that work on character data.
+ * Abstract class for ciphers that works on character data.
  */
 public abstract class CharacterCipher {
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

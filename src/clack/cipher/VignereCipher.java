@@ -1,6 +1,6 @@
 package clack.cipher;
 
-/** VignereCipher is a class for encrypting and decrypting text using the Vignere cipher method.
+/** VignereCipher is a class created for encrypting and decrypting text using the Vignere cipher method.
  * This cipher uses a keyword to encode and decode text by shifting each letter of the plaintext
  * by a corresponding letter in the keyword. */
 public class VignereCipher {

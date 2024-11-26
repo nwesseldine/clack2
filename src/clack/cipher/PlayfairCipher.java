@@ -1,6 +1,6 @@
 package clack.cipher;
 
-/** PlayfairCipher class is a class used for encrypting/decrypting text using the Playfair Cipher method.
+/** PlayfairCipher class is used for encrypting/decrypting text using the Playfair Cipher method.
  * PlayfairCipher uses a 5x5 matrix to encrypt and decrypt pairs of letters. This class replaces the letter 'J'
  * with the letter 'I', as there are 26 letters in the alphabet and only 25 (5x5) spaces in the matrix. 'J' is one
  * of the most uncommon letters in the English language, so that is why we chose to replace it with 'I'.

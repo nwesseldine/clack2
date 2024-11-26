@@ -7,7 +7,7 @@ public class CaesarCipher extends CharacterCipher {
     /**
      * Constructs a CaesarCipher object that encrypts by shifting
      * a letter 'key' positions further right in ALPHABET (with
-     * wrap-around). 'key' may be negative, in which case the shift
+     * wrap-around). 'key' could be negative, in which case the shift
      * is leftward. A key of 0 is also allowed, but results in the
      * null cipher.
      * @param key how far to shift each letter.
