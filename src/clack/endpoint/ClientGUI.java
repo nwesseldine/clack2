@@ -110,7 +110,7 @@ public class ClientGUI
         messagePanel.setLayout(
                 new BoxLayout(messagePanel, BoxLayout.LINE_AXIS));
         messagePanel.setBorder(
-                BorderFactory.createEmptyBorder(10, 5, 10, 5));
+                BorderFactory.createEmptyBorder(10, 5, 70, 5));
         messagePanel.add(messageLabel);
         messagePanel.add(messageField);
 
@@ -119,7 +119,7 @@ public class ClientGUI
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Clack");
         frame.setLayout(new BorderLayout());
-        frame.add(connectionPanel, BorderLayout.NORTH);
+        frame.add(connectionPanel, BorderLayout.EAST);
         frame.add(controlPanel, BorderLayout.NORTH); // NEW
         frame.add(logPane, BorderLayout.CENTER);
         frame.add(messagePanel, BorderLayout.SOUTH);
@@ -160,9 +160,53 @@ public class ClientGUI
                 log.append("User entered: '" + messageField.getText() + "'\n")
         );
 
+        //Dialogue panel
+        JPanel dialoguePanel = new JPanel();
+        dialoguePanel.setLayout(new BorderLayout());
+
+        JLabel loginLabel = new JLabel("Enter your login details", SwingConstants.CENTER);
+        JTextField usernameField = new JTextField(15);
+        JPasswordField passwordField = new JPasswordField(15);
+
+        dialoguePanel.add(loginLabel, BorderLayout.NORTH);
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.add(new JLabel("username:"));
+        inputPanel.add(usernameField);
+        inputPanel.add(new JLabel("Password:"));
+        inputPanel.add(passwordField);
+        dialoguePanel.add(inputPanel, BorderLayout.CENTER);
+
+        JButton submitButton = new JButton("Submit");
+        dialoguePanel.add(submitButton, BorderLayout.SOUTH);
+
+        frame.add(dialoguePanel, BorderLayout.CENTER);
+        frame.revalidate();
+        frame.repaint();
+
+        dialoguePanel.setVisible(false);
+        inputPanel.setVisible(false);
+
         // New action listeners
+        submitButton.addActionListener((e) ->
+                {
+                    dialoguePanel.setVisible(false);
+                    inputPanel.setVisible(false);
+                    log.append("Submit button clicked\n");
+                    hostField.setEnabled(false);
+                    portField.setEnabled(false);
+                    logInButton.setEnabled(false);
+                    logOutButton.setEnabled(true);
+                    listUsersButton.setEnabled(true);
+                    clearConversationButton.setEnabled(true);
+                    helpButton.setEnabled(true);
+                    sendFileButton.setEnabled(true);
+                }
+        );
         logInButton.addActionListener((e) ->
                 {
+                    dialoguePanel.setVisible(true);
+                    inputPanel.setVisible(true);
                     log.append("Login button clicked\n");
                     hostField.setEnabled(false);
                     portField.setEnabled(false);
@@ -177,14 +221,7 @@ public class ClientGUI
         logOutButton.addActionListener((e) ->
                 {
                     log.append("Logout button clicked\n");
-                    hostField.setEnabled(false);
-                    portField.setEnabled(false);
-                    logInButton.setEnabled(true);
-                    logOutButton.setEnabled(false);
-                    listUsersButton.setEnabled(false);
-                    clearConversationButton.setEnabled(false);
-                    helpButton.setEnabled(false);
-                    sendFileButton.setEnabled(false);
+                    frame.dispose();
                 }
         );
 
@@ -211,6 +248,7 @@ public class ClientGUI
         );
         clearConversationButton.addActionListener((e) ->
                 {
+                    log.setText(null);
                     log.append("Clear Conversation button clicked\n");
                     hostField.setEnabled(false);
                     portField.setEnabled(false);
@@ -226,7 +264,7 @@ public class ClientGUI
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
             Client client = new Client("localhost", 4466);
-            new ClientGUI(10,5,client);
+            new ClientGUI(100,100,client);
         });
     }
 
