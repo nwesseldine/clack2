@@ -24,10 +24,11 @@ public abstract class CharacterCipher {
 
         StringBuilder groups = new StringBuilder();
 
-        for (int i = 1; i * n < str.length(); i++) {
-            groups.insert(i * n + (i - 1), ' ');
+        for (int i = 0; i < str.length(); i++) {
+            groups.append(str.charAt(i));
+            if ((i + 1) % n == 0 && (i + 1) != str.length()) {
+                groups.append(' '); }
         }
-
         return groups.toString();
     }
 

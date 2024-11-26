@@ -1,4 +1,5 @@
 package clack.cipher;
+import java.util.HashSet;
 
 /** PlayfairCipher class is used for encrypting/decrypting text using the Playfair Cipher method.
  * PlayfairCipher uses a 5x5 matrix to encrypt and decrypt pairs of letters. This class replaces the letter 'J'
@@ -8,165 +9,157 @@ package clack.cipher;
 
 public class PlayfairCipher {
 
-    private char[][] matrix;
+    private final char[][] matrix;
 
     /** Constructs a PlayFairCipher instance and generates the 5x5 matrix.
      * @param key is the keyword that is used in the matrix.
-     * @throws IllegalArgumentException if the key has a null value or is simply empty.
+     * @throws IllegalArgumentException if the key is just a null value.
      */
     public PlayfairCipher(String key) {
-        if (key == null || key.isEmpty()) {
+        if (key == null) {
             throw new IllegalArgumentException("Key cannot be null or empty. ");
         }
-        generateMatrix(key);
+        this.matrix = generateMatrix(key);
     }
 
     /** generateMatrix generates the 5x5 matrix that is used for encrypting/decrypting the key.
      * This matrix contains the letters in the key followed by the remaining letters of the alphabet, skipping
      * all duplicates and replacing 'J' with 'I'.
-     * @param key is the keyword used in the matrix.
+     * generateMatrix implements a HashSet, as HashSets contain unique items (in this case, letters).
+     * We found HashSets to be more efficient when creating the matrix of unique letters (no duplicates).
+     * @param keyword is the keyword used in the matrix.
+     * @return the 5x5 matrix.
      */
-    public void generateMatrix(String key) {
-        key = key.toUpperCase().replaceAll("J", "I");
-        String alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
-        StringBuilder matrixString = new StringBuilder(key);
 
-        for (char c : alphabet.toCharArray()) {
-            if (matrixString.indexOf(String.valueOf(c)) == -1) {
-                matrixString.append(c); }
+    private char[][] generateMatrix(String keyword) {
+        // ALPHABET LETTERS WITHOUT THE LETTER 'J'
+        String ALPHABET = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+
+        StringBuilder characters = new StringBuilder();
+        HashSet<Character> letterSet = new HashSet<>();
+
+        for (char c : keyword.toUpperCase().toCharArray()) {
+            if (c == 'J') {
+                c = 'I'; }
+
+            if (!letterSet.contains(c) && ALPHABET.indexOf(c) >= 0) {
+                characters.append(c);
+                letterSet.add(c); }
         }
 
-        matrix = new char[5][5];
-        int index = 0;
-
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                matrix[i][j] = matrixString.charAt(index++);
-            }
+        for (char c : ALPHABET.toCharArray()) {
+            if (c != 'J' && !letterSet.contains(c)) {
+                characters.append(c);
+                letterSet.add(c); }
         }
+
+        // ADDS REMAINING LETTERS OF ALPHABET (NO DUPLICATES) TO MATRIX
+        char[][] matrix = new char[5][5];
+        for (int i = 0; i < 25; i++) {
+            matrix[i / 5][i % 5] = characters.charAt(i);
+        }
+        return matrix;
     }
 
-    /** encrypt performs encryption of a plaintext message in the Playfair cipher.
+    /** encrypt performs encryption of a plaintext message by implementing the
+     * checkPairs(String, boolean) method. checkPairs(String, boolean) is a method
+     * used for both encryption and decryption.
      * @param plaintext is the plaintext that needs to be encrypted.
-     * @return the encrypted message (if plaintext is null, encrypt returns null).
+     * @return the final message from checkPairs(String, boolean)
+     * (if plaintext is null, encrypt returns null).
      */
     public String encrypt (String plaintext) {
-
         if (plaintext == null) {
             return null; }
 
-        plaintext = prep(plaintext);
-        StringBuilder ciphertext = new StringBuilder();
-
-        for (int i = 0; i < plaintext.length(); i += 2) {
-            char first = plaintext.charAt(i);
-            char second = plaintext.charAt(i + 1);
-            ciphertext.append(encryptPair(first, second));
-        }
-
-        return ciphertext.toString();
+        return checkPairs(plaintext, true);
     }
 
-    /** decrypt performs decryption of an encrypted message using the Playfair cipher.
+    /** decrypt performs decryption of an encrypted message by implementing
+     * the checkPairs(String, boolean) method. checkPairs(String, boolean)
+     * is a method used for both encryption and decryption.
      * @param ciphertext is the encrypted text that needs to be decrypted.
-     * @return the decrypted message (if ciphertext is null, then decrypt returns null).
+     * @return the final message from checkPairs(String, boolean)
+     * (if ciphertext is null, then decrypt returns null).
      */
     public String decrypt (String ciphertext) {
-
         if (ciphertext == null) {
             return null; }
 
-        StringBuilder plaintext = new StringBuilder();
-
-        for (int i  = 0; i < ciphertext.length(); i += 2) {
-            char first = ciphertext.charAt(i);
-            char second = ciphertext.charAt(i + 1);
-            plaintext.append(decryptPair(first, second));
-        }
-
-        return plaintext.toString();
+        return checkPairs(ciphertext, false);
     }
 
     /** prep prepares the plaintext for encryption. It converts the text to uppercase letters,
-     * and it replaces all the 'J' letters with 'I' letters. prep also removes non-alphabet characters
-     * and checks if the text length is even/odd.
+     * and it replaces all the 'J' letters with 'I' letters. prep also removes non-alphabetic characters
+     * and checks if the text length is even/odd. prep also adds padding for repeating characters.
      * @param text is the plaintext that needs to be prepared for encryption.
-     * @throws IllegalArgumentException if text is null.
-     * @return the prepared text that is ready for encryption.
+     * @return the prepared text that is ready for encryption or null if text is null.
      */
     public String prep(String text) {
         if (text == null) {
-            throw new IllegalArgumentException("Text cannot be null. "); }
+            return null; }
 
-        text = text.toUpperCase().replaceAll("[^A-Z]", "").replaceAll("J", "I");
+        // CLEANS TEXT (CONVERTS TO UPPERCASE, REMOVES NON-ALPHABETIC CHARACTERS,
+        // AND REPLACES ALL 'J' LETTERS WITH 'I' LETTERS)
+        text = text.toUpperCase();
+        text = text.replaceAll("[^A-Z]", "");
+        text = text.replaceAll("J", "I");
+
         StringBuilder preparedText = new StringBuilder();
+        preparedText.append(text);
 
-        for (int i = 0; i < text.length(); i++) {
-            char current = text.charAt(i);
-            preparedText.append(current);
-
-            if (i < text.length() - 1 && current == text.charAt(i + 1)) {
-                preparedText.append('X'); }
-            else if (preparedText.length() % 2 == 0 && i + 1 < text.length()) {
-                i++;
-                preparedText.append(text.charAt(i)); }
+        for (int d = 0; d < 10; d++) {
+            int count = 1;
+            for (int i = 0; i < preparedText.length(); i++) {
+                if (count % 2 == 0 && preparedText.charAt(i) == preparedText.charAt(i - 1)) {
+                    preparedText.insert(i, 'X');
+                    break;
+                }
+                count++;
+            }
         }
 
+        // CHECKS IF LENGTH OF MESSAGE IS ODD, IF SO ADDS A 'Z' AT THE END
         if (preparedText.length() % 2 != 0) {
-            preparedText.append('Z');
-        }
+            preparedText.append('Z'); }
+
         return preparedText.toString();
     }
 
-    /** encryptPair encrypts two characters using the Playfair cipher.
-     * @param first is the first character in the pair.
-     * @param second is the second character in the pair.
-     * @return the encrypted pair.
+    /** checkPairs is a method used for both encryption and decryption.
+     * @param text is the text that needs to be encrypted/decrypted.
+     * @param encrypt is true for encryption and false for decryption.
+     * @return finalMessage (the text after being encrypted/decrypted).
      */
-    public String encryptPair (char first, char second) {
+    public String checkPairs (String text, boolean encrypt) {
+        StringBuilder finalMessage = new StringBuilder();
 
-        if (first == 'J') {
-            first = 'I'; }
+        for (int i = 0; i < text.length(); i += 2) {
+            char first = text.charAt(i);
+            char second = text.charAt(i + 1);
 
-        if (second == 'J') {
-            second = 'I'; }
+            // LOCATE THE POSITIONS OF TWO CHARACTERS
+            int[] firstPos = findPosition(first);
+            int[] secondPos = findPosition(second);
 
-        int[] firstPos = findPosition(first);
-        int[] secondPos = findPosition(second);
+            // 3 DIFFERENT CASES FOR PAIRS:
+            // First Case: characters are in same row
+            if (firstPos[0] == secondPos[0]) {
+                finalMessage.append(this.matrix[firstPos[0]][(firstPos[1] + (encrypt ? 1 : -1) + 5) % 5]);
+                finalMessage.append(this.matrix[secondPos[0]][(secondPos[1] + (encrypt ? 1 : -1) + 5) % 5]);
 
-        if (firstPos[0] == secondPos[0]) {
-            return String.valueOf(matrix[firstPos[0]][(firstPos[1] + 1) % 5]) + matrix[secondPos[0]][(secondPos[1] + 1) % 5]; }
+            // Second Case: characters are in same column
+            } else if (firstPos[1] == secondPos[1]) {
+                finalMessage.append(this.matrix[(firstPos[0] + (encrypt ? 1 : -1) + 5) % 5][firstPos[1]]);
+                finalMessage.append(this.matrix[(secondPos[0] + (encrypt ? 1 : -1) + 5) % 5][secondPos[1]]);
 
-        else if (firstPos[1] == secondPos[1]) {
-            return String.valueOf(matrix[(firstPos[0] + 1) % 5][firstPos[1]]) + matrix[(secondPos[0] + 1) % 5][secondPos[1]]; }
-
-        else {
-            return String.valueOf(matrix[firstPos[0]][secondPos[1]]) + matrix[secondPos[0]][firstPos[1]]; }
-    }
-
-    /** decryptPair decrypts a pair of characters using the Playfair cipher.
-     * @param firstChar is the first character in the pair.
-     * @param secondChar is the second character in the pair.
-     * @return the decrypted pair of characters.
-     */
-    public String decryptPair (char firstChar, char secondChar) {
-
-        if (firstChar == 'J') {
-            firstChar = 'I'; }
-
-        if (secondChar == 'J') {
-            secondChar = 'I'; }
-
-        int[] firstPos = findPosition(firstChar);
-        int[] secondPos = findPosition(secondChar);
-
-        if (firstPos[0] == secondPos[0]) {
-            return String.valueOf(matrix[firstPos[0]][(firstPos[1] + 4) % 5]) + matrix[secondPos[0]][(secondPos[1] + 4) % 5];
-        } else if (firstPos[1] == secondPos[1]) {
-            return String.valueOf(matrix[(firstPos[0] + 4) % 5][firstPos[1]]) + matrix[(secondPos[0] + 4) % 5][secondPos[1]];
-        } else {
-            return String.valueOf(matrix[firstPos[0]][secondPos[1]]) + matrix[secondPos[0]][firstPos[1]];
+           // Third Case: characters make a rectangle
+            } else {
+                finalMessage.append(this.matrix[firstPos[0]][secondPos[1]]);
+                finalMessage.append(this.matrix[secondPos[0]][firstPos[1]]);
+            }
         }
+        return finalMessage.toString();
     }
 
     /** findPosition finds the position of characters in the matrix.
@@ -174,17 +167,13 @@ public class PlayfairCipher {
      * @return array that holds the row and column indices of c.
      * @throws IllegalArgumentException if c is not found in the matrix.
      */
-    public int[] findPosition (char c) {
-
-        if (c == 'J') {
-            c = 'I'; }
-
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (matrix[i][j] == c) {
-                    return new int[]{i, j}; }
+    private int[] findPosition (char c) {
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 5; col++) {
+                if (matrix[row][col] == c) {
+                    return new int[]{row, col}; }
             }
         }
-        throw new IllegalArgumentException("Character not found in matrix. ");
+        throw new IllegalArgumentException("Character " + c + " not found in matrix. ");
     }
 }
