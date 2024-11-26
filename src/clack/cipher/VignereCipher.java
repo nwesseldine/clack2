@@ -1,19 +1,27 @@
 package clack.cipher;
 
+/** VignereCipher is a class for encrypting and decrypting text using the Vignere cipher method.
+ * This cipher uses a keyword to encode and decode text by shifting each letter of the plaintext
+ * by a corresponding letter in the keyword. */
 public class VignereCipher {
 
     private String key;
 
-    // initializes the VignereCipher with a given key, converts to uppercase
+    /** Constructs an instance of VignereCipher with a given key.
+     * @param key is the given keyword.
+     * @throws IllegalArgumentException if key is null.
+     * Converts key to uppercase letters. */
     public VignereCipher(String key) {
         if (key == null) {
-            throw new IllegalArgumentException("The key cannot be null. ");
-        }
+            throw new IllegalArgumentException("The key cannot be null. "); }
+
         this.key = key.toUpperCase();
     }
 
-    // iterates through plaintext, shifts each character by corresponding character
-    // in repeating key, handles wrapping with modulo arithmetic
+    /** encrypt performs encryption on plaintext using the Vignere cipher.
+     * @param plaintext is the text that needs to be encrypted.
+     * @return the encrypted text (ciphertext).
+     */
     public String encrypt (String plaintext) {
         plaintext = prepareText(plaintext);
         StringBuilder ciphertext = new StringBuilder();
@@ -28,7 +36,9 @@ public class VignereCipher {
         return ciphertext.toString();
     }
 
-    // reverses encryption process using modular subtraction
+    /** decrypt performs decryption on an encrypted message using the Vignere cipher.
+     * @param ciphertext is the encrypted message that needs to be decrypted.
+     * @return the decrypted text (plaintext). */
     public String decrypt (String ciphertext) {
         StringBuilder plaintext = new StringBuilder();
 
@@ -42,8 +52,11 @@ public class VignereCipher {
         return plaintext.toString();
     }
 
-    // prepares input by removing non-alphabetic characters and converting to uppercase
+    /** prepareText prepares given text by removing all non-alphabetic characters and
+     * converting the text to uppercase letters.
+     * @param text is the text that needs to be prepared.
+     * @return the prepared text. */
     public String prepareText (String text) {
-        return text.toUpperCase().replaceAll("[A-Z]", "");
+        return text.toUpperCase().replaceAll("[^A-Z]", "");
     }
 }

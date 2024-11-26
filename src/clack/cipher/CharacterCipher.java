@@ -16,28 +16,30 @@ public abstract class CharacterCipher {
      * @return the grouped version of the argument string
      */
     public static String group(String str, int n) {
-        if (str == null || n <= 0) {
-            throw new IllegalArgumentException("String cannot be null, n must be greater than 0. ");
-        }
-        if (str.isEmpty()) {
-            return "";
-        }
-        str = str.replaceAll("\\s+", "");
+        if (n <= 0) {
+            throw new IllegalArgumentException("n must be greater than 0. "); }
+
+        if (str == null) {
+            return null; }
+
         StringBuilder groups = new StringBuilder();
 
-        for (int i = 0; i < str.length(); i++) {
-            if (i > 0 && i % n == 0) {
-                groups.append(" ");
-            }
-            groups.append(str.charAt(i));
+        for (int i = 1; i * n < str.length(); i++) {
+            groups.insert(i * n + (i - 1), ' ');
         }
+
         return groups.toString();
     }
 
+    /** Mod computes the modulus of an integer.
+     * @throws IllegalArgumentException if the modulus is negative or zero.
+     * @param n is the integer that the program computes the modulus for.
+     * @param modulus is the modulus value (has to be >= 1).
+     * @return the positive modulus result. */
     public static int mod(int n, int modulus) {
         if (modulus < 1) {
-            throw new IllegalArgumentException("modulus must be >= 1");
-        }
+            throw new IllegalArgumentException("Modulus must be >= 1"); }
+
         return ((n % modulus) + modulus) % modulus;
     }
 
@@ -52,12 +54,12 @@ public abstract class CharacterCipher {
      * @throws IllegalArgumentException if c is not in ALPHABET.
      */
     public static char shift(char c, int n) {
-        if (ALPHABET.indexOf(c) == -1) {
+        if (ALPHABET.indexOf(c) < 0) {
             throw new IllegalArgumentException(
-                    "Argument ('" + c + "') not in ALPHABET");
-        }
+                    "Argument ('" + c + "') not in ALPHABET"); }
+
         int cPos = ALPHABET.indexOf(c);
-        int shiftPos = (cPos + n) % ALPHABET.length();
+        int shiftPos = mod(n + cPos, ALPHABET.length());
         return ALPHABET.charAt(shiftPos);
     }
 
@@ -70,26 +72,16 @@ public abstract class CharacterCipher {
      */
     public static String shift(String str, int n) {
         if (str == null) {
-            throw new IllegalArgumentException("String cannot be null. ");
+            return null; }
+
+        char[] chars = str.toCharArray();
+
+        for (int i = 0; i < chars.length; ++i) {
+            if (ALPHABET.indexOf(chars[i]) < 0) {
+                throw new IllegalArgumentException("Argument not in ALPHABET. "); }
+            chars[i] = shift(chars[i], n);
         }
-        StringBuilder result = new StringBuilder();
-        for (char c : str.toCharArray()) {
-            int i = ALPHABET.indexOf(c);
-            if (i == -1) {
-                throw new IllegalArgumentException("Character not in ALPHABET. ");
-            }
-
-            int shiftedIndex = (i + n + ALPHABET.length()) % ALPHABET.length();
-            result.append(ALPHABET.charAt(shiftedIndex));
-        }
-
-        return result.toString();
-
-//        char[] chars = str.toCharArray();
-//        for (int i = 0; i < chars.length; ++i) {
-//            chars[i] = shift(chars[i], n);
-//        }
-//        return new String(chars);
+        return new String(chars);
     }
 
     /**
@@ -129,8 +121,8 @@ public abstract class CharacterCipher {
      */
     public static String clean(String str) {
         if (str == null) {
-            return null;
-        }
+            return null; }
+
         return str.toUpperCase().replaceAll("[^A-Z]", "");
     }
 }

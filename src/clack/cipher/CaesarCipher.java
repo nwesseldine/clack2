@@ -13,11 +13,7 @@ public class CaesarCipher extends CharacterCipher {
      * @param key how far to shift each letter.
      */
     public CaesarCipher(int key) {
-        if (key == 0) {
-            throw new IllegalArgumentException(
-                    "Key of 0 results in null cipher. ");
-        }
-        this.key = (key % ALPHABET.length() + ALPHABET.length()) % ALPHABET.length();
+        this.key = key % ALPHABET.length();
     }
 
     /**
@@ -30,14 +26,14 @@ public class CaesarCipher extends CharacterCipher {
     public CaesarCipher(String key) {
         if (key == null || key.isEmpty()) {
             throw new IllegalArgumentException(
-                    "Need a non-null, non-empty string");
-        }
+                    "Need a non-null, non-empty string"); }
+
         char shiftChar = key.charAt(0);
         this.key = ALPHABET.indexOf(shiftChar);
+
         if (this.key < 0) {
             throw new IllegalArgumentException(
-                    "First character of 'key' argument not in ALPHABET");
-        }
+                    "First character of 'key' argument not in ALPHABET"); }
     }
 
     /**
