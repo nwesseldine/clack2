@@ -21,7 +21,7 @@ public class TextMessage
     {
         return "TextMessage{"
                 + super.toString()
-                + ",text='" + text + '\'' +
+                + ", text='" + text + '\'' +
                 '}';
     }
 }

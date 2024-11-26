@@ -17,8 +17,13 @@ public class LoginMessage extends Message
     @Override
     public String toString()
     {
+        StringBuilder asterix = new StringBuilder();
+        for(int i = 0; i < password.length(); i++) {
+            asterix.append('*');
+        }
         return "LoginMessage{"
-                + super.toString()
-                + "} ";
+                + super.toString() +
+                ", password=" + "'" + asterix + "'"
+                + "}";
     }
 }

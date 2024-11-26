@@ -72,7 +72,9 @@ public class FileMessage extends Message
     public String toString()
     {
         return "FileMessage{"
-                + super.toString()
+                + super.toString() +
+                ", fileName='" + fileName + '\'' +
+                ", fileContents='" + fileContents + '\''
                 + "}";
     }
 }

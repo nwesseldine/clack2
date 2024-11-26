@@ -26,7 +26,9 @@ public class OptionMessage extends Message
     public String toString()
     {
         return "OptionMessage{"
-                + super.toString()
+                + super.toString() +
+                ", option=" + option +
+                ", value='" + value + '\''
                 + '}';
     }
 
