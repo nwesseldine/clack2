@@ -253,7 +253,7 @@ public class ClientGUI
         );
         sendFileButton.addActionListener((e) ->
                 {
-                    JOptionPane.showMessageDialog(frame, "Send this file?"); //TODO: how would they submit this
+                    JOptionPane.showMessageDialog(frame, "Send this file?");
                     frame.remove(dialoguePanel);
                     frame.revalidate();
                     frame.repaint();
@@ -286,7 +286,7 @@ public class ClientGUI
 
     /**
      * Create a "main-like" environment to declare a client gui object.
-     * @param args
+     * @param args Arguments of the main function.
      */
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
