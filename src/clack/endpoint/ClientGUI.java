@@ -134,7 +134,6 @@ public class ClientGUI
                     connectButton.setEnabled(false);
                     logInButton.setEnabled(true);
                     logOutButton.setEnabled(false);
-                    // TODO is login needed here?
                     listUsersButton.setEnabled(true);
                     clearConversationButton.setEnabled(true);
                     helpButton.setEnabled(true);
@@ -149,7 +148,6 @@ public class ClientGUI
                     connectButton.setEnabled(true);
                     logInButton.setEnabled(false);
                     logOutButton.setEnabled(true);
-                    //TODO is logout needed here?
                     listUsersButton.setEnabled(false);
                     clearConversationButton.setEnabled(false);
                     helpButton.setEnabled(false);
@@ -185,9 +183,6 @@ public class ClientGUI
         frame.repaint();
 
         //"Submit" Functionality
-
-
-
         dialoguePanel.setVisible(false);
         inputPanel.setVisible(false);
         logInButton.setEnabled(false);
