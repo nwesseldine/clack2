@@ -5,6 +5,7 @@ import clack.message.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -21,7 +22,8 @@ import java.util.Scanner;
  * The server replies with a last TextMessage, closes the
  * connection, and waits for a new connection.
  */
-public class Client {
+public class Client
+{
     public static final String DEFAULT_USERNAME = "client";
 
     private final String hostname;
@@ -50,6 +52,7 @@ public class Client {
         this.prompt = "hostname:" + port + "> ";
     }
 
+
     /**
      * Creates a client for exchanging Message objects, using the
      * default username (Client.DEFAULT_USERNAME).
@@ -72,104 +75,126 @@ public class Client {
      */
     public void start() throws UnknownHostException, IOException, ClassNotFoundException
     {
-       // ClientGUI gui = new ClientGUI(5, 5);
+        ClientGUI gui = new ClientGUI(5, 5, client);
 
         System.out.println("Attempting connection to " + hostname + ":" + port);
-
+        Scanner keyboard = new Scanner(System.in);
         try (
-                Socket socket = new Socket(hostname, port);
+                Socket socket = new Socket(hostname, port)) {
+            try (
+                    ObjectOutputStream outObj = new ObjectOutputStream(socket.getOutputStream());
+                    ObjectInputStream inObj = new ObjectInputStream(socket.getInputStream());
 
-                OutputStream outStream = socket.getOutputStream();
-                ObjectOutputStream outObj = new ObjectOutputStream(outStream);
 
-                InputStream inStream = socket.getInputStream();
-                ObjectInputStream inObj = new ObjectInputStream(inStream);
+            ) {
+                Message inMsg;
+                Message outMsg;
+                String userInput;
 
-                Scanner keyboard = new Scanner(System.in);
-        )
-        {
-            Message inMsg;
-            Message outMsg;
-
-            // Take turns talking. Server goes first.
-            do {
-                // Get server message and show it to user.
-                inMsg = (Message) inObj.readObject();
-
-                outMsg = switch (inMsg.getMsgType()) {
-                    case FILE -> new FileMessage("client", "UNEXPECTED FILE ");
-                    case TEXT -> new TextMessage("client", "UNEXPECTED TEXT ");
-                    default -> new TextMessage("client", "UNEXPECTED RESPONSE" + inMsg);
-                };
-
-                String userInput = keyboard.nextLine();
-                String[] tokens;
-
+                // Take turns talking. Server goes first.
                 do {
-                    // Get user input
-                    System.out.print(prompt);
-                    userInput = keyboard.nextLine();
-                    tokens = userInput.trim().split("\\s+");
-                } while (tokens.length == 0);
-                
-                // DEBUG
-                // System.out.println("tokens: " + Arrays.toString(tokens));
+                    // Get server message and show it to user.
+                    inMsg = (Message) inObj.readObject();
+                    System.out.println(
+                            switch (inMsg.getMsgType()) {
+                                case FILE -> "File and its contents is " + inMsg;
+                                case TEXT -> ((TextMessage) inMsg).getText();
+                                default -> "UNEXPECTED RESPONSE: " + inMsg;
+                            });
 
-                // Construct Message based on user input and send it to server.
-                outMsg = switch (tokens[0].toUpperCase()) {
-                    
-                    case "LOGOUT" -> new LogoutMessage(username);
-                    case "LISTUSERS" -> new ListUsersMessage(username);
-                    case "LOGIN" -> {
-                        if (tokens.length < 3) {
-                            new TextMessage(username, "Invalid LOGIN ");
-                        }
-                        yield new LoginMessage(tokens[1], tokens[2]);
-                    }
-                    case "HELP" -> new HelpMessage(username);
-                    case "OPTION" -> {
-                        if (tokens.length < 3) {
-                            new TextMessage(username, "Invalid OPTION ");
-                        }
-                        OptionEnum option = OptionEnum.valueOf(tokens[1]);
-                        yield new OptionMessage(username, option, tokens[2]);
-                    }
-                    case "SEND" -> {
-                        if (tokens.length < 3) {
-                            yield new TextMessage(username, "Invalid SEND ");
-                        }
-                        if ("FILE".equalsIgnoreCase(tokens[1])) {
-                            yield new FileMessage(username, tokens[2]);
-                        }
-                        else {
-                            yield new TextMessage(username, tokens[2]);
-                        }
-                    }
-                    default -> new TextMessage(username, userInput);
-                };
+                    String[] tokens;
 
-                // Sends message to server
+                    do {
+                        // Get user input
+                        System.out.print(prompt);
+                        userInput = keyboard.nextLine();
+                        tokens = userInput.trim().split("\\s+");
+                    } while (tokens.length == 0);
+
+                    // DEBUG
+                    System.out.println("tokens: " + Arrays.toString(tokens));
+
+                    // Construct Message based on user input and send it to server.
+                    outMsg = switch (tokens[0].toUpperCase()) {
+
+                        case "LOGOUT" -> new LogoutMessage(username);
+                        case "LIST" -> {
+                            if ((tokens.length > 1) && tokens[1].equalsIgnoreCase("USERS")) {
+                                yield new ListUsersMessage(username);
+                            } else {
+                                yield new TextMessage(username, userInput);
+                            }
+                        }
+                        case "LOGIN" -> {
+                            if (tokens.length < 2) {
+                                yield new TextMessage(username, "Invalid LOGIN ");
+                            }
+                            yield new LoginMessage(username, tokens[1]);
+                        }
+                        case "HELP" -> new HelpMessage(username);
+                        case "OPTION" -> {
+                            if (tokens.length == 2 || tokens.length == 3) {
+                                try {
+                                    OptionEnum option = OptionEnum.valueOf(tokens[1].toUpperCase());
+                                    if (tokens.length == 3) {
+                                        yield new OptionMessage(username, option, tokens[2]);
+                                    } else {
+                                        yield new OptionMessage(username, option, null);
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Invalid option: " + tokens[1]);
+                                    yield new HelpMessage(username);
+                                }
+                            } else {
+                                yield new TextMessage(username, userInput);
+                            }
+                        }
+                        case "SEND" -> {
+                            if (tokens[1].equalsIgnoreCase("FILE")) {
+                                try {
+                                    if (tokens.length == 5) {
+                                        if (tokens[3].equalsIgnoreCase("AS")) {
+                                            yield new FileMessage(username, tokens[2], tokens[4]);
+                                        } else {
+                                            System.out.println("Incorrect file format");
+                                            yield new HelpMessage(username);
+                                        }
+                                    } else if (tokens.length == 3) {
+                                        yield new FileMessage(username, tokens[2]);
+                                    } else {
+                                        System.out.println("Incorrect file format");
+                                        yield new HelpMessage(username);
+                                    }
+                                } catch (IOException e) {
+                                    System.out.println("Couldn't open/find");
+                                    yield new HelpMessage(username);
+                                }
+                            } else {
+                                yield new TextMessage(username, userInput);
+                            }
+
+                        }
+                        default -> new TextMessage(username, userInput);
+                    };
+
+                    // Sends message to server
                     outObj.writeObject(outMsg);
                     outObj.flush();
 
-            } while (outMsg.getMsgType() != MsgTypeEnum.LOGOUT);
+                } while (outMsg.getMsgType() != MsgTypeEnum.LOGOUT);
 
-            // Get server's closing reply and show it to user.
-            inMsg = (Message) inObj.readObject();
-            System.out.println(
-                    switch (inMsg.getMsgType()) {
-                        case TEXT -> ((TextMessage) inMsg).getText();
-                        case LISTUSERS -> "UNEXPECTED RESPONSE: " + inMsg;
-                        case LOGOUT -> "UNEXPECTED RESPONSE: " + inMsg;
-                        case LOGIN -> "UNEXPECTED RESPONSE: " + inMsg;
-                        case OPTION -> "UNEXPECTED RESPONSE: " + inMsg;
-                        case FILE -> "UNEXPECTED RESPONSE: " + inMsg;
-                        case HELP -> "UNEXPECTED RESPONSE: " + inMsg;
-                    });
+                // Get server's closing reply and show it to user.
+                inMsg = (Message) inObj.readObject();
+                if (inMsg.getMsgType() == MsgTypeEnum.TEXT) {
+                    System.out.println(((TextMessage) inMsg).getText());
+                } else {
+                    System.out.println("UNEXPECTED RESPONSE: " + inMsg);
+                }
 
-        }   // Streams and sockets closed by try-with-resources
+            }   // Streams and sockets closed by try-with-resources
 
-        System.out.println("Connection to " + hostname + ":" + port
-                + " closed, exiting.");
+            System.out.println("Connection to " + hostname + ":" + port
+                    + " closed, exiting.");
+        }
     }
 }

@@ -28,15 +28,12 @@ public class Server
 
     // For strings sent to client.
     private static final String GREETING =
-            "[Server listening. 'Logout' (case insensitive) closes connection.]";
+            "[Server listening. 'Logout' (case insensitive) closes connection.]\n Enter LOGININFO";
     private static final String GOOD_BYE =
             "[Closing connection, good-bye.]";
-    //    private String optionCipherkey = null;
-//    private String optionCipherName = null;
-//    private String optionCipherEnable = null;
     private boolean loggedIn = false;
     private Properties options;
-    private CharacterCipher cipher;
+    private String login_status = "";
 
     // Object variables.
     private final int port;
@@ -61,8 +58,8 @@ public class Server
         this.port = port;
         this.serverName = serverName;
         options = new Properties();
-        options.setProperty("CIPHER_KEY", "");
-        options.setProperty("CIPHER_NAME", "");
+        options.setProperty("CIPHER_KEY", "empty");
+        options.setProperty("CIPHER_NAME", "empty");
         options.setProperty("CIPHER_ENABLE", "false");
     }
 
@@ -90,6 +87,14 @@ public class Server
         }
     }
 
+    public boolean isLoggedIn(String username, String password){
+        StringBuilder sb = new StringBuilder(username);
+        String reversed_pass = new String(sb.reverse());
+        return(reversed_pass.equals(password));
+    }
+
+
+
     /**
      * Starts this server, listening on the port it was
      * constructed with.
@@ -116,32 +121,30 @@ public class Server
                     Message inMsg;
                     Message outMsg;
 
-                    // Connection made. Greet client.
-                    outMsg = new TextMessage(serverName, GREETING);
+                    do {
+                        do {
+                            // Connection made. Greet client.
+                            outMsg = new TextMessage(serverName, login_status +GREETING);
+                            outObj.writeObject(outMsg);
+                            outObj.flush();
+
+                            if (SHOW_TRAFFIC) {
+                                System.out.println("=> " + outMsg);
+                            }
+                            inMsg = (Message) inObj.readObject();
+                        } while (inMsg.getMsgType() != MsgTypeEnum.LOGIN);
+                        LoginMessage login = (LoginMessage) inMsg;
+                        if (isLoggedIn(login.getUsername(), login.getPassword())) {
+                            login_status = "Login Accepted, Now in Command Loop ";
+                            loggedIn = true;
+                        } else {
+                            login_status = "Login Failed, Try Again ";
+                        }
+                    } while(loggedIn == false);
+                    outMsg = new TextMessage(serverName, login_status);
                     outObj.writeObject(outMsg);
                     outObj.flush();
-                    if (SHOW_TRAFFIC) {
-                        System.out.println("=> " + outMsg);
-                    }
-                    do {
-                        outMsg = new TextMessage(serverName, "Enter LOGIN Information");
-                        inMsg = (Message) inObj.readObject();
 
-                        if (inMsg.getMsgType() != MsgTypeEnum.LOGIN) {
-                            break;
-                        } else {
-                            String password = ((LoginMessage) inMsg).getPassword();
-                            StringBuilder sb = new StringBuilder(password);
-                            sb.reverse();
-                            String reversed_pass = new String(sb);
-                            if (inMsg.getUsername().equals(reversed_pass)) {
-                                outMsg = new TextMessage(serverName, "LOGIN accepted");
-                                loggedIn = true;
-                            } else {
-                                outMsg = new TextMessage(serverName, "LOGIN failed");
-                            }
-                        }
-                    } while (loggedIn == false);
 
                     // Converse with client.
                     do {
@@ -160,7 +163,8 @@ public class Server
                             case MsgTypeEnum.OPTION -> handleOption(((OptionMessage) inMsg));
                             case MsgTypeEnum.FILE -> new TextMessage(serverName,
                                     "File Saved: Name of File is " + ((FileMessage) inMsg).getFileName());
-                            case MsgTypeEnum.HELP -> new TextMessage(serverName, "HELP requested");
+                            case MsgTypeEnum.HELP -> new TextMessage(serverName, "HELP\nLIST USERS\nLOGIN\nLOGOUT\nOPTION [] {option_value}\n"
+                                    + "SEND FILE {filepath} AS {filename}");
                             default -> throw new IllegalArgumentException();
                         };
 
@@ -173,7 +177,7 @@ public class Server
 
                     System.out.println("=== Terminating connection. ===");
                 }   // Streams and socket closed by try-with-resources.
-            }
+            } // while loop
         } // Server socket closed by try-with-resources.
     }
 }
