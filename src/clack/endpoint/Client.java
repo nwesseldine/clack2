@@ -75,8 +75,9 @@ public class Client
      */
     public void start() throws UnknownHostException, IOException, ClassNotFoundException
     {
-        ClientGUI gui = new ClientGUI(5, 5, client);
-
+        //ClientGUI gui = new ClientGUI(5, 5, client);
+        // !!!!!! We do have a ClientGUI, but we can only run it using the main function that
+        // is at the bottom of ClientGUI. There is no other way we can run it in Client at the moment. !!!!!
         System.out.println("Attempting connection to " + hostname + ":" + port);
         Scanner keyboard = new Scanner(System.in);
         try (

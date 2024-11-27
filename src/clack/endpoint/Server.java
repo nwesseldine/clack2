@@ -75,6 +75,9 @@ public class Server
         this(port, DEFAULT_SERVERNAME);
     }
 
+    /** Handles Option type.
+     * @param inMsg is the message type, given by the user
+     * @return TextMessage that shows option type*/
     public Message handleOption(Message inMsg)
     {
         String option = ((OptionMessage) inMsg).getOption().toString();
@@ -87,6 +90,10 @@ public class Server
         }
     }
 
+    /** checks if logged in
+     * @param username is the username
+     * @param password is the user's password
+     * @return true or false if user is logged in*/
     public boolean isLoggedIn(String username, String password){
         StringBuilder sb = new StringBuilder(username);
         String reversed_pass = new String(sb.reverse());
