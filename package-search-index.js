@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"clack.cipher"},{"l":"clack.endpoint"},{"l":"clack.message"}];updateSearchResults();
